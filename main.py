@@ -1,6 +1,7 @@
 import os
 import sys
-from PyQt6.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QLineEdit, QLabel, QHBoxLayout, QVBoxLayout, QComboBox, QFileDialog
+from PyQt6.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QLineEdit, QLabel, QHBoxLayout, \
+    QVBoxLayout, QComboBox, QFileDialog, QMessageBox
 from PyQt6.QtCore import QSize, Qt
 
 
@@ -53,9 +54,18 @@ class MainWindowLayout(QWidget):
     def choose_files(self):
         self.directory = os.path.abspath(QFileDialog.getExistingDirectory(self, 'Select directory'))
 
-        self.directory_label.setText("Directory with files to rename: {}".format(self.directory))
-        self.rename_files_btn.setText('Rename files')
-        self.rename_files_btn.setEnabled(True)
+        if self.directory == os.getcwd():
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("Denied")
+            dlg.setText("You can't rename the files in this directory.")
+            dlg.setIcon(QMessageBox.Icon.Critical)
+            self.rename_files_btn.setEnabled(False)
+            dlg.exec()
+
+        else:
+            self.directory_label.setText("Directory with files to rename: {}".format(self.directory))
+            self.rename_files_btn.setText('Rename files')
+            self.rename_files_btn.setEnabled(True)
 
     def show_preview(self):
         input = self.new_name_input.text()
