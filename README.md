@@ -13,3 +13,12 @@ User Story: As a User, I want to set the new name for the file batch
 
 Engineer Story: As an Engineer I want to see unit tests
 1. Implement unit tests
+
+## Features to add
+- Filename input validation (REGEX) (eg. no "/" and "\\")
+- Have a predefined (user input) number of 0s before the number (to avoid sorting having 1, 10, 11, 3 etc.)
+
+## Fixes to do
+- Add typing where possible
+- Use logger instead of print functions
+- Store logs in a file
