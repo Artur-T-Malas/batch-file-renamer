@@ -1,4 +1,5 @@
-### WIP
+![RenamerEmpty](./docs/img/renamer_empty.png "Application with no input")
+![RenamerWithInput](./docs/img/renamer_with_input.png "Application with input")
 
 ### Functional Requirements
 User Story: As a User, I want to choose files from a dialog window
