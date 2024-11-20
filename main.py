@@ -2,7 +2,7 @@ import os
 import sys
 from PyQt6.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QLineEdit, QLabel, QHBoxLayout, \
     QVBoxLayout, QComboBox, QFileDialog, QMessageBox
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtCore import QSize, Qt, QDir
 
 
 class MainWindow(QMainWindow):
@@ -32,7 +32,7 @@ class MainWindowLayout(QWidget):
         self.rename_files_btn.setEnabled(False)
 
         # Connect signals
-        self.select_files_to_rename.clicked.connect(self.choose_files)
+        self.select_files_to_rename.clicked.connect(self.launch_choose_dir_dialog)
         self.new_name_input.textChanged.connect(self.show_preview)
         self.rename_files_btn.clicked.connect(self.rename_files)
 
@@ -51,8 +51,15 @@ class MainWindowLayout(QWidget):
 
         self.setLayout(layout)
 
+    def launch_choose_dir_dialog(self):
+        self.choose_directory_dialog = QFileDialog(self, "Choose the directory")
+        self.choose_directory_dialog.accepted.connect(self.choose_files)
+        self.choose_directory_dialog.exec()
+
+
     def choose_files(self):
-        self.directory = os.path.abspath(QFileDialog.getExistingDirectory(self, 'Select directory'))
+        self.directory: str = self.choose_directory_dialog.directory().absolutePath()
+        print(f"{self.directory = }")
 
         if self.directory == os.getcwd():
             dlg = QMessageBox(self)
