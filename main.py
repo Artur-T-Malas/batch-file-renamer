@@ -1,7 +1,7 @@
 import os
 import sys
 from PyQt6.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QLineEdit, QLabel, QHBoxLayout, \
-    QVBoxLayout, QComboBox, QFileDialog, QMessageBox, QSpinBox, QGridLayout
+    QVBoxLayout, QComboBox, QFileDialog, QMessageBox, QSpinBox, QGridLayout, QGroupBox
 from PyQt6.QtCore import QSize, Qt, QDir
 
 
@@ -29,11 +29,14 @@ class MainWindowLayout(QWidget):
         self.select_files_to_rename = QPushButton("Select directory with files to rename", self)
         self.new_name_preview = QLabel("", self)
         new_name_label = QLabel("New name for this file batch", self)
-        self.number_padding_label = QLabel("Choose length of \"0\" padding", self)
+        self.number_padding_label = QLabel("Length of \"0\" padding", self)
         self.number_padding_spin_box = QSpinBox(self)
+        self.number_padding_spin_box.setMinimum(1)
         self.new_name_input = QLineEdit(self)
         self.rename_files_btn = QPushButton("Rename files", self)
         self.rename_files_btn.setEnabled(False)
+        directory_group_box = QGroupBox("Directory", self)
+        renaming_group_box = QGroupBox("Renaming", self)
 
         # Connect signals
         self.select_files_to_rename.clicked.connect(self.launch_choose_dir_dialog)
@@ -44,9 +47,15 @@ class MainWindowLayout(QWidget):
 
         # Add PyQt elements to layout
         layout = QVBoxLayout(self)
-        layout.addWidget(self.directory_label)
-        layout.addWidget(self.select_files_to_rename)
-        layout.addWidget(self.new_name_preview)
+
+        directory_layout = QVBoxLayout(self)
+        directory_layout.addWidget(self.directory_label)
+        directory_layout.addWidget(self.select_files_to_rename)
+        directory_group_box.setLayout(directory_layout)
+        layout.addWidget(directory_group_box)
+
+        renaming_layout = QVBoxLayout(self)
+        renaming_layout.addWidget(self.new_name_preview)
 
         grid_rename_layout = QGridLayout(self)
         grid_rename_layout.addWidget(self.number_padding_label, 0, 0)
@@ -54,10 +63,15 @@ class MainWindowLayout(QWidget):
         grid_rename_layout.addWidget(new_name_label, 1, 0)
         grid_rename_layout.addWidget(self.new_name_input, 1, 1)
 
-        layout.addLayout(grid_rename_layout)
-        layout.addWidget(self.rename_files_btn)
+        renaming_layout.addLayout(grid_rename_layout)
+        renaming_layout.addWidget(self.rename_files_btn)
+
+        renaming_group_box.setLayout(renaming_layout)
+        layout.addWidget(renaming_group_box)
 
         self.setLayout(layout)
+
+        self.show_preview()
 
     def launch_choose_dir_dialog(self):
         self.choose_directory_dialog = QFileDialog(self, "Choose the directory")
@@ -94,7 +108,7 @@ class MainWindowLayout(QWidget):
 
     def show_preview(self):
         input = self.new_name_input.text()
-        str_to_display = "The files will be renamed to: {}_{}, {}_{} and so on".format(input, "1".zfill(self.number_padding), input , "2".zfill(self.number_padding))
+        str_to_display = "Files will be renamed to: {}_{}, {}_{} and so on".format(input, "1".zfill(self.number_padding), input , "2".zfill(self.number_padding))
         self.new_name_preview.setText(str_to_display)
 
     def rename_files(self):
