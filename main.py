@@ -1,7 +1,7 @@
 import os
 import sys
 from PyQt6.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QLineEdit, QLabel, QHBoxLayout, \
-    QVBoxLayout, QComboBox, QFileDialog, QMessageBox
+    QVBoxLayout, QComboBox, QFileDialog, QMessageBox, QSpinBox, QGridLayout
 from PyQt6.QtCore import QSize, Qt, QDir
 
 
@@ -20,13 +20,17 @@ class MainWindowLayout(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.directory = ""
+        self.directory: str = ""
+        self.number_padding: int = 0
+        self.number_padding_chosen: bool = False
 
         # Create PyQt elements
         self.directory_label = QLabel("Directory with files to rename: ", self)
         self.select_files_to_rename = QPushButton("Select directory with files to rename", self)
         self.new_name_preview = QLabel("", self)
         new_name_label = QLabel("New name for this file batch", self)
+        self.number_padding_label = QLabel("Choose length of \"0\" padding", self)
+        self.number_padding_spin_box = QSpinBox(self)
         self.new_name_input = QLineEdit(self)
         self.rename_files_btn = QPushButton("Rename files", self)
         self.rename_files_btn.setEnabled(False)
@@ -34,6 +38,8 @@ class MainWindowLayout(QWidget):
         # Connect signals
         self.select_files_to_rename.clicked.connect(self.launch_choose_dir_dialog)
         self.new_name_input.textChanged.connect(self.show_preview)
+        self.number_padding_spin_box.valueChanged.connect(self.change_number_padding)
+        self.number_padding_spin_box.valueChanged.connect(self.show_preview)
         self.rename_files_btn.clicked.connect(self.rename_files)
 
         # Add PyQt elements to layout
@@ -42,11 +48,13 @@ class MainWindowLayout(QWidget):
         layout.addWidget(self.select_files_to_rename)
         layout.addWidget(self.new_name_preview)
 
-        horizontal_layout = QHBoxLayout(self)
-        horizontal_layout.addWidget(new_name_label)
-        horizontal_layout.addWidget(self.new_name_input)
+        grid_rename_layout = QGridLayout(self)
+        grid_rename_layout.addWidget(self.number_padding_label, 0, 0)
+        grid_rename_layout.addWidget(self.number_padding_spin_box, 0, 1)
+        grid_rename_layout.addWidget(new_name_label, 1, 0)
+        grid_rename_layout.addWidget(self.new_name_input, 1, 1)
 
-        layout.addLayout(horizontal_layout)
+        layout.addLayout(grid_rename_layout)
         layout.addWidget(self.rename_files_btn)
 
         self.setLayout(layout)
@@ -57,9 +65,19 @@ class MainWindowLayout(QWidget):
         self.choose_directory_dialog.exec()
 
 
+    def change_number_padding(self):
+        self.number_padding_chosen = True
+        self.number_padding = self.number_padding_spin_box.value()
+
     def choose_files(self):
         self.directory: str = self.choose_directory_dialog.directory().absolutePath()
         print(f"{self.directory = }")
+
+        # If the padding was not manually chosen, create it automatically based on number of digits in the count of files to rename
+        if not self.number_padding_chosen:
+            self.number_padding = len(str(len(os.listdir(self.directory))))
+            self.number_padding_spin_box.setValue(self.number_padding)
+            self.show_preview()
 
         if self.directory == os.getcwd():
             dlg = QMessageBox(self)
@@ -76,7 +94,7 @@ class MainWindowLayout(QWidget):
 
     def show_preview(self):
         input = self.new_name_input.text()
-        str_to_display = "The files will be renamed to: {}_1, {}_2 and so on".format(input, input)
+        str_to_display = "The files will be renamed to: {}_{}, {}_{} and so on".format(input, "1".zfill(self.number_padding), input , "2".zfill(self.number_padding))
         self.new_name_preview.setText(str_to_display)
 
     def rename_files(self):
@@ -93,7 +111,7 @@ class MainWindowLayout(QWidget):
 
             old_name, extension = os.path.splitext(os.path.join(self.directory, file))
             print(old_name, extension)
-            new_name = f'{new_batch_name}_{i}'
+            new_name = f'{new_batch_name}_{str(i).zfill(self.number_padding)}'
 
             old = os.path.join(self.directory, f'{old_name}{extension}')
             new = os.path.join(self.directory, f'{new_name}{extension}')
