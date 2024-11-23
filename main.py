@@ -24,7 +24,7 @@ class MainWindowLayout(QWidget):
         self.number_padding: int = 0
         self.number_padding_chosen: bool = False
 
-        # Create PyQt elements
+        # Create and configure PyQt elements
         self.directory_label = QLabel("Directory with files to rename: ", self)
         self.select_files_to_rename = QPushButton("Select directory with files to rename", self)
         self.new_name_preview = QLabel("", self)
@@ -72,6 +72,7 @@ class MainWindowLayout(QWidget):
         self.setLayout(layout)
 
         self.show_preview()
+
 
     def launch_choose_dir_dialog(self):
         self.choose_directory_dialog = QFileDialog(self, "Choose the directory")

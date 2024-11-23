@@ -22,6 +22,8 @@ Engineer Story: As an Engineer I want to see unit tests
 ## Features to add
 - Filename input validation (REGEX) (eg. no "/" and "\\")
 - Be able to select specific files to renames (instead of whole directories) - could be with a switch (radio button) to let user decide whether they want whole directory or just some files
+- Add a switch (checkbox maybe or iPhone-like switch) to have the number padding only automatic (disable user input) or forced by user (still the default value will be automatic)
+- Add a loader (based on the number of files already renamed vs remaining)
 
 ## Fixes to do
 - Add typing where possible
