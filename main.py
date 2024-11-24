@@ -86,7 +86,6 @@ class MainWindowLayout(QWidget):
 
     def choose_files(self):
         self.directory: str = self.choose_directory_dialog.directory().absolutePath()
-        print(f"{self.directory = }")
 
         # If the padding was not manually chosen, create it automatically based on number of digits in the count of files to rename
         if not self.number_padding_chosen:
@@ -114,30 +113,40 @@ class MainWindowLayout(QWidget):
 
     def rename_files(self):
         list_of_files = os.listdir(self.directory)
-        print(list_of_files)
+        list_of_files.sort()
 
         i = 1
         new_batch_name = self.new_name_input.text()
 
         for file in list_of_files:
 
-            print('self.directory =', self.directory)
-            print('cwd', os.getcwd())
-
-            old_name, extension = os.path.splitext(os.path.join(self.directory, file))
-            print(old_name, extension)
+            old_name, extension = os.path.splitext(file)
             new_name = f'{new_batch_name}_{str(i).zfill(self.number_padding)}'
+
+            # While a file with the new name already exists in the directory,
+            # try to find either the first available name or to leave the file's current name if it matches
+            if new_name in [os.path.splitext(file_name)[0] for file_name in os.listdir(self.directory)] and f"{new_name}{extension}" != file:
+                print(f"File {old_name}{extension} not renamed, because {new_name}{extension} already exists in directory.")
+                k = 1
+                while new_name in [os.path.splitext(file_name)[0] for file_name in os.listdir(self.directory)] and f"{new_name}{extension}" != file:
+                    new_name = f'{new_batch_name}_{str(k).zfill(self.number_padding)}'
+                    print(f'\tTrying {new_name}{extension}')
+                    k += 1
+                    i = k
+
+            # If a file's name will not change, continue
+            if file == f"{new_name}{extension}":
+                print(f"File {old_name}{extension} not renamed - new name the same as old name.")
+                i += 1
+                continue
 
             old = os.path.join(self.directory, f'{old_name}{extension}')
             new = os.path.join(self.directory, f'{new_name}{extension}')
 
-            print(f"Renaming file {old} to {new}")
-
             os.rename(old, new)
+            print(f"{old_name}{extension} => {new_name}{extension}")
 
             i += 1
-
-            print(f"Renamed file {file} to {new_name}{extension}")
 
         self.rename_files_btn.setEnabled(False)
         self.rename_files_btn.setText('Files renamed succesfully. Choose next directory.')
