@@ -1,8 +1,11 @@
 import os
 import sys
+from collections import Counter
 from PyQt6.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QLineEdit, QLabel, QHBoxLayout, \
-    QVBoxLayout, QComboBox, QFileDialog, QMessageBox, QSpinBox, QGridLayout, QGroupBox
+    QVBoxLayout, QComboBox, QFileDialog, QMessageBox, QSpinBox, QGridLayout, QGroupBox, QCheckBox, QLayout
 from PyQt6.QtCore import QSize, Qt, QDir
+
+from extension_checkbox import ExtensionCheckbox
 
 
 class MainWindow(QMainWindow):
@@ -23,6 +26,8 @@ class MainWindowLayout(QWidget):
         self.directory: str = ""
         self.number_padding: int = 0
         self.number_padding_chosen: bool = False
+        self.extensions: list[str] = []
+        self.checkboxes: list[ExtensionCheckbox] = []
 
         # Create and configure PyQt elements
         self.directory_label = QLabel("Directory with files to rename: ", self)
@@ -37,6 +42,7 @@ class MainWindowLayout(QWidget):
         self.rename_files_btn.setEnabled(False)
         directory_group_box = QGroupBox("Directory", self)
         renaming_group_box = QGroupBox("Renaming", self)
+        self.extensions_group_box = QGroupBox("Only files with chosen extensions will be renamed", self)
 
         # Connect signals
         self.select_files_to_rename.clicked.connect(self.launch_choose_dir_dialog)
@@ -55,6 +61,9 @@ class MainWindowLayout(QWidget):
         layout.addWidget(directory_group_box)
 
         renaming_layout = QVBoxLayout(self)
+        self.checkboxes_layout = QHBoxLayout()
+        self.extensions_group_box.setLayout(self.checkboxes_layout)
+        renaming_layout.addWidget(self.extensions_group_box)
         renaming_layout.addWidget(self.new_name_preview)
 
         grid_rename_layout = QGridLayout(self)
@@ -105,14 +114,45 @@ class MainWindowLayout(QWidget):
             self.directory_label.setText("Directory with files to rename: {}".format(self.directory))
             self.rename_files_btn.setText('Rename files')
             self.rename_files_btn.setEnabled(True)
+            self.clear_extension_choosing_panel()
+            self.create_extension_choosing_panel(self.get_all_file_extensions(os.listdir(self.directory)))
 
     def show_preview(self):
         input = self.new_name_input.text()
         str_to_display = "Files will be renamed to: {}_{}, {}_{} and so on".format(input, "1".zfill(self.number_padding), input , "2".zfill(self.number_padding))
         self.new_name_preview.setText(str_to_display)
 
+    def get_all_file_extensions(self, file_list: list[str]) -> set[str]:
+        extensions: list[str] = []
+        for file in file_list:
+            old_name, extension = os.path.splitext(file)
+            extensions.append(extension)
+
+        return set(extensions)
+
+    def create_extension_choosing_panel(self, extensions: set[str]) -> None:
+        extensions = sorted(list(extensions))
+        for extension in extensions:
+            extension_checkbox = ExtensionCheckbox(extension, self, self.extensions)
+            self.checkboxes_layout.addWidget(extension_checkbox.checkbox)
+            self.checkboxes.append(extension_checkbox)
+
+    def clear_extension_choosing_panel(self) -> None:
+        for checkbox in self.checkboxes:
+            self.checkboxes_layout.removeWidget(checkbox.checkbox)
+        self.checkboxes.clear()
+        self.extensions.clear()
+
+    def filter_extensions(self, file_list: list[str]):
+        corrected_file_list: list[str] = []
+        for file in file_list:
+            old_name, extension = os.path.splitext(file)
+            if extension in self.extensions:
+                corrected_file_list.append(file)
+        return corrected_file_list
+
     def rename_files(self):
-        list_of_files = os.listdir(self.directory)
+        list_of_files = self.filter_extensions(os.listdir(self.directory))
         list_of_files.sort()
 
         i = 1

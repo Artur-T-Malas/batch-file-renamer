@@ -41,6 +41,9 @@ For `Holidays_1.jpg` the script will first try to rename it to `Holidays_2.jpg`,
 
 
 ## Changelog
+### 2024-11-27
+1. Added extension choosing (only files with one of the chosen extensions will be renamed). The list of available extensions (checkboxes) is generated automatically for any chosen directory/folder
+
 ### 2024-11-24
 1. Fixed CRITICAL bug causing loss of files if some of the files had names that the script would try to rename other files to, which resulted in overwriting and loss of original files
 
@@ -53,13 +56,17 @@ For `Holidays_1.jpg` the script will first try to rename it to `Holidays_2.jpg`,
 - Be able to select specific files to renames (instead of whole directories) - could be with a switch (radio button) to let user decide whether they want whole directory or just some files
 - Add a switch (checkbox maybe or iPhone-like switch) to have the number padding only automatic (disable user input) or forced by user (still the default value will be automatic)
 - Add a loader (based on the number of files already renamed vs remaining)
-- Add choosing of file extensions and option to rename files will extensions (launch an alert dialog because this is dangerous and not recommended)
+- Have a counter next to each extension to show how many files have that extension
+- Add a separate toggle to also rename directories (eg. smth like `isDir` check)
 
 ## Known bugs
 - Renamed files may have missing numbers in between them, or the same numbers on two or more files if the extensions are different (eg. after running the script you may end up with both `NewName_1.jpg` and `NewName_1.png` files)
-- Script also renames hidden system files like `.DS_Store` and folders/directories if they are in the target folder/directory
+- Directories with names containing a full stop `.` are treated as files with extensions
 
 ## Fixes to do
+- Make the extension list "fold" when it get's too wide
+- Automatically resize the window back to a smaller side if it got extended by something like a long directory path or file name or a lot of extensions
+- Hide the extensions Group Box until a directory is selected
 - Ignore extensions like .DS_Store etc.
 - Add typing where possible
 - Use logger instead of print functions
