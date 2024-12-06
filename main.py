@@ -1,11 +1,15 @@
 import os
 import sys
+import logging
 from collections import Counter
 from PyQt6.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QLineEdit, QLabel, QHBoxLayout, \
     QVBoxLayout, QComboBox, QFileDialog, QMessageBox, QSpinBox, QGridLayout, QGroupBox, QCheckBox, QLayout
 from PyQt6.QtCore import QSize, Qt, QDir
 
 from extension_checkbox import ExtensionCheckbox
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 
 class MainWindow(QMainWindow):
@@ -14,9 +18,9 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Batch File Renamer")
 
-        self.MainLayout = MainWindowLayout()
+        self.main_layout = MainWindowLayout()
 
-        self.setCentralWidget(self.MainLayout)
+        self.setCentralWidget(self.main_layout)
 
 
 class MainWindowLayout(QWidget):
@@ -54,19 +58,19 @@ class MainWindowLayout(QWidget):
         # Add PyQt elements to layout
         layout = QVBoxLayout(self)
 
-        directory_layout = QVBoxLayout(self)
+        directory_layout = QVBoxLayout()
         directory_layout.addWidget(self.directory_label)
         directory_layout.addWidget(self.select_files_to_rename)
         directory_group_box.setLayout(directory_layout)
         layout.addWidget(directory_group_box)
 
-        renaming_layout = QVBoxLayout(self)
+        renaming_layout = QVBoxLayout()
         self.checkboxes_layout = QHBoxLayout()
         self.extensions_group_box.setLayout(self.checkboxes_layout)
         renaming_layout.addWidget(self.extensions_group_box)
         renaming_layout.addWidget(self.new_name_preview)
 
-        grid_rename_layout = QGridLayout(self)
+        grid_rename_layout = QGridLayout()
         grid_rename_layout.addWidget(self.number_padding_label, 0, 0)
         grid_rename_layout.addWidget(self.number_padding_spin_box, 0, 1)
         grid_rename_layout.addWidget(new_name_label, 1, 0)
@@ -166,17 +170,17 @@ class MainWindowLayout(QWidget):
             # While a file with the new name already exists in the directory,
             # try to find either the first available name or to leave the file's current name if it matches
             if new_name in [os.path.splitext(file_name)[0] for file_name in os.listdir(self.directory)] and f"{new_name}{extension}" != file:
-                print(f"File {old_name}{extension} not renamed, because {new_name}{extension} already exists in directory.")
+                logger.debug(f"File {old_name}{extension} not renamed, because {new_name}{extension} already exists in directory.")
                 k = 1
                 while new_name in [os.path.splitext(file_name)[0] for file_name in os.listdir(self.directory)] and f"{new_name}{extension}" != file:
                     new_name = f'{new_batch_name}_{str(k).zfill(self.number_padding)}'
-                    print(f'\tTrying {new_name}{extension}')
+                    logger.debug(f'\tTrying {new_name}{extension}')
                     k += 1
                     i = k
 
             # If a file's name will not change, continue
             if file == f"{new_name}{extension}":
-                print(f"File {old_name}{extension} not renamed - new name the same as old name.")
+                logger.info(f"File {old_name}{extension} not renamed - new name the same as old name.")
                 i += 1
                 continue
 
@@ -184,7 +188,7 @@ class MainWindowLayout(QWidget):
             new = os.path.join(self.directory, f'{new_name}{extension}')
 
             os.rename(old, new)
-            print(f"{old_name}{extension} => {new_name}{extension}")
+            logger.info(f"{old_name}{extension} => {new_name}{extension}")
 
             i += 1
 
