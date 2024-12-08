@@ -16,13 +16,13 @@ from PyQt6.QtWidgets import (
 )
 
 from extension_checkbox import ExtensionCheckbox
-from renamer import BatchFileRenamer
+from renamer import Renamer
 
 
-class RenamerLayout(QWidget):
+class AppLayout(QWidget):
     def __init__(
             self,
-            renamer: BatchFileRenamer
+            renamer: Renamer
         ):
         super().__init__()
 

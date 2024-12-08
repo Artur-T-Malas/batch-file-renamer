@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 
-class BatchFileRenamer:
+class Renamer:
     def __init__(self): ...
 
     def get_all_file_extensions(self, path) -> set[str]:
@@ -42,7 +42,7 @@ class BatchFileRenamer:
             new_batch_name: str,
             number_padding: int = 3
         ):
-        
+
         files_to_rename.sort()
 
         i = 1

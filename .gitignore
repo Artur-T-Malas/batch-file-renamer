@@ -5,3 +5,5 @@
 .pytest_cache/
 poetry.lock
 __pycache__/
+tests/
+renaming_test_files_source/

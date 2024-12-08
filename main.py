@@ -1,8 +1,8 @@
 import sys
 from PyQt6.QtWidgets import QApplication
 
-from renamer import BatchFileRenamer
-from renamer_main_window import RenamerMainWindow
+from renamer import Renamer
+from app_main_window import AppMainWindow
 
 
 def main() -> None:
@@ -11,8 +11,8 @@ def main() -> None:
     app = QApplication(sys.argv)
 
     # Create a Qt widget, which will be our window
-    renamer = BatchFileRenamer()
-    window = RenamerMainWindow(renamer)
+    renamer = Renamer()
+    window = AppMainWindow(renamer)
     # Show the window
     window.show()
 
