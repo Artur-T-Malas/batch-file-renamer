@@ -16,7 +16,6 @@ class ExtensionCheckbox:
 
     def toggle_extension(self) -> None:
 
-        print(f'{self.extension = }, {self.checkbox.isChecked() = }')
         if self.checkbox.isChecked():
             self.extensions_list.append(self.extension)
         else:

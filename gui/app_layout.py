@@ -15,8 +15,8 @@ from PyQt6.QtWidgets import (
     QMessageBox
 )
 
-from extension_checkbox import ExtensionCheckbox
-from renamer import Renamer
+from .extension_checkbox import ExtensionCheckbox
+from core.renamer import Renamer
 
 
 class AppLayout(QWidget):

@@ -1,22 +1,20 @@
 import sys
 from PyQt6.QtWidgets import QApplication
 
-from renamer import Renamer
-from app_main_window import AppMainWindow
+from core.renamer import Renamer
+from gui.app_layout import AppLayout
+from gui.app_main_window import AppMainWindow
 
 
 def main() -> None:
 
-    # Create an instance of QApplication. Pass in sys.argv to allow command line arguments (not used right now).
     app = QApplication(sys.argv)
 
-    # Create a Qt widget, which will be our window
     renamer = Renamer()
-    window = AppMainWindow(renamer)
-    # Show the window
-    window.show()
+    layout = AppLayout(renamer)
+    window = AppMainWindow(layout, "Batch File Renamer")
 
-    # Start the event loop
+    window.show()
     app.exec()
 
 
