@@ -41,6 +41,10 @@ For `Holidays_1.jpg` the script will first try to rename it to `Holidays_2.jpg`,
 
 
 ## Changelog
+
+### 2024-12-25
+1. Directories are now ignored when both looking for extensions and renaming
+
 ### 2024-11-27
 1. Added extension choosing (only files with one of the chosen extensions will be renamed). The list of available extensions (checkboxes) is generated automatically for any chosen directory/folder
 
@@ -61,7 +65,6 @@ For `Holidays_1.jpg` the script will first try to rename it to `Holidays_2.jpg`,
 
 ## Known bugs
 - Renamed files may have missing numbers in between them, or the same numbers on two or more files if the extensions are different (eg. after running the script you may end up with both `NewName_1.jpg` and `NewName_1.png` files)
-- Directories with names containing a full stop `.` are treated as files with extensions
 
 ## Fixes to do
 - Make the extension list "fold" when it get's too wide

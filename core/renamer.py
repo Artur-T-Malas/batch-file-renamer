@@ -16,18 +16,28 @@ class Renamer:
     def __init__(self): ...
 
     def get_all_file_extensions(self, path) -> set[str]:
-        file_list: list[str] = os.listdir(path)
+        file_list: list[str] = self.filter_directories(path)
         extensions: list[str] = []
         for file in file_list:
             old_name, extension = os.path.splitext(file)
             extensions.append(extension)
         return set(extensions)
     
+    def filter_directories(
+        self,
+        path: str
+    ) -> list[str]:
+
+        file_list: list[str] = os.listdir(path)
+        filtered_list: list[str] = [file for file in file_list if not os.path.isdir(os.path.join(path, file))]
+        return filtered_list
+
     def filter_extensions(
         self,
         file_list: list[str],
         extensions: list[str]
     ) -> list[str]:
+
         corrected_file_list: list[str] = []
         for file in file_list:
             old_name, extension = os.path.splitext(file)
@@ -38,7 +48,7 @@ class Renamer:
     def rename_files(
             self,
             directory: str,
-            files_to_rename: str,
+            files_to_rename: list[str],
             new_batch_name: str,
             number_padding: int = 3
         ):

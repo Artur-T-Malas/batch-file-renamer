@@ -142,7 +142,7 @@ class AppLayout(QWidget):
         new_batch_name: str = self.new_name_input.text()
 
         files_to_rename: list[str] = self.renamer.filter_extensions(
-            file_list=os.listdir(self.directory),
+            file_list=self.renamer.filter_directories(self.directory),
             extensions=self.extensions
         )
 
