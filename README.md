@@ -64,6 +64,7 @@ For `Holidays_1.jpg` the script will first try to rename it to `Holidays_2.jpg`,
 - Add a separate toggle to also rename directories (eg. smth like `isDir` check)
 
 ## Known bugs
+- CRITICAL Folders / Directories need to be entered into in the selection dialog, not just highighted! If they are only highlighted the parent directory will be chosen!
 - Renamed files may have missing numbers in between them, or the same numbers on two or more files if the extensions are different (eg. after running the script you may end up with both `NewName_1.jpg` and `NewName_1.png` files)
 
 ## Fixes to do
