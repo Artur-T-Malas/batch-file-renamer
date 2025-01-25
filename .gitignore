@@ -1,3 +1,4 @@
+# Local development and testing related files
 .DS_Store
 .idea/
 .vscode/
@@ -5,5 +6,8 @@
 .pytest_cache/
 poetry.lock
 __pycache__/
-tests/
+test_renaming.py
 renaming_test_files_source/
+.coverage
+htmlcov/
+.mypy_cache

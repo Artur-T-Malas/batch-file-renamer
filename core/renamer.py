@@ -6,6 +6,9 @@ and actual renaming logic.
 
 import logging
 import os
+import re
+from collections.abc import Callable
+from re import Pattern
 
 
 logger = logging.getLogger(__name__)
@@ -44,6 +47,63 @@ class Renamer:
             if extension in extensions:
                 corrected_file_list.append(file)
         return corrected_file_list
+    
+
+    def get_file_number_from_name(
+            self,
+            filename: str
+    ) -> int:
+        """
+        Returns the number of the file taken from its name.
+        Requires the file name to be match this regex pattern:
+        `^\S*_\d+.?\S*$` (basically <whatever>_### or <whatever>_###.<extension>)
+        For more information about patterns and regex visit:
+        https://docs.python.org/3/howto/regex.html
+        and to try it out visit:
+        https://regex101.com/
+        """
+        split_filename: list[str] = filename.split(".")
+        filename_without_extension: str = ''.join(split_filename[:-1] if len(split_filename) > 1 else split_filename)
+        extracted_file_number: str = filename_without_extension.split("_")[-1]
+        file_number: int = int(extracted_file_number)
+        return file_number
+
+
+    def get_files_matching_pattern(
+            self,
+            file_list: list[str],
+            pattern: str
+    ) -> list[str]:
+        """
+        Finds and returns names of files which match the specified regex pattern.
+        For more information about patterns and regex visit:
+        https://docs.python.org/3/howto/regex.html
+        and to try it out visit:
+        https://regex101.com/
+        """
+        compiled_pattern: Pattern = re.compile(pattern)
+        files_matching: list[str] = []
+        for file in file_list:
+            if re.match(compiled_pattern, file):
+                files_matching.append(file)
+        return files_matching
+    
+
+    def get_files_matching_range(
+            self,
+            file_list: list[str],
+            max_number: int,
+            file_number_getting_function: Callable[[str], int] | None = None
+    ) -> list[str]:
+        """
+        Finds and returns files which have a number
+        in the provided range.
+        """
+        if file_number_getting_function is None:
+            file_number_getting_function = self.get_file_number_from_name
+        files_matching_range: list[str] = list(filter(lambda name: file_number_getting_function(name) <= max_number, file_list))
+        return files_matching_range
+
 
     def rename_files(
             self,
@@ -54,6 +114,38 @@ class Renamer:
         ):
 
         files_to_rename.sort()
+        max_number: int = len(files_to_rename)
+        numbers_pool: set = set(range(max_number + 1))
+
+        logger.info(f"{files_to_rename = }")
+
+        # Check if any files already have a name that matches the new one
+        pattern: str = f"^{new_batch_name}_\d{{{number_padding}}}.?\S*$"
+        files_with_names_matching_pattern: list[str] = self.get_files_matching_pattern(files_to_rename, pattern)
+
+        # If those files were found, check if their numbers are in the correct range
+        files_with_correct_numbers: list[str] = self.get_files_matching_range(
+            files_with_names_matching_pattern,
+            max_number,
+            self.get_file_number_from_name
+        )
+        #   If yes, 
+        #       remove those numbers from the pool, 
+        #       and remove those files from the list of files_to_rename
+        for file in files_with_correct_numbers:
+            files_to_rename.remove(file)
+            numbers_pool.remove(self.get_file_number_from_name(file))
+        #   If not, 
+        #       don't do anything
+
+        logger.info(f"After looking for already renamed files: {files_to_rename = }")
+
+        # TODO:
+        # Instead of the complicated logic, since we've already checked for files already renamed to
+        # our format, don't do the actual renaming in this method
+        # and just do the mapping of "old" -> "new" and execute it somewhere else
+        # this way this function's logic will be testable!
+
 
         i = 1
 
