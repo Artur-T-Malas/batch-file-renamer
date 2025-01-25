@@ -96,8 +96,8 @@ class AppLayout(QWidget):
         self.choose_directory_dialog.accepted.connect(self.choose_files)
         self.choose_directory_dialog.exec()
 
-    def choose_files(self):
-        self.directory: str = self.choose_directory_dialog.directory().absolutePath()
+    def choose_files(self) -> None:
+        self.directory = self.choose_directory_dialog.directory().absolutePath()
 
         # If the padding was not manually chosen, create it automatically based on number of digits in the count of files to rename
         if not self.number_padding_chosen:
@@ -126,8 +126,8 @@ class AppLayout(QWidget):
         self.new_name_preview.setText(str_to_display)
 
     def create_extension_choosing_panel(self, extensions: set[str]) -> None:
-        extensions = sorted(list(extensions))
-        for extension in extensions:
+        extensions_list: list[str] = sorted(list(extensions))
+        for extension in extensions_list:
             extension_checkbox = ExtensionCheckbox(extension, self, self.extensions)
             self.checkboxes_layout.addWidget(extension_checkbox.checkbox)
             self.checkboxes.append(extension_checkbox)
