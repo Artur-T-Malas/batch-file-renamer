@@ -1,49 +1,45 @@
 ![RenamerEmpty](./docs/img/renamer_empty.png "Application with no input")
 ![RenamerWithInput](./docs/img/renamer_with_input.png "Application with input")
 
-## Renaming Logic
-> Work in progress. The logic described below may (and hopefully will) change in the future
+# Renaming Logic
+For all examples below, let’s assume that user chose the new name to be `Holidays` and the number of digit characters to `3`.
 
-Script will always try to rename files to `new-name_i.extension`, with `i` being the next value starting from „1” (may include leading 0s based on user’s choice). The input list of files (read from directory) will always be sorted by file names.
+Script will always try to rename files to `new-name_i.extension`, with `i` being the next value starting from „1” (may include leading 0s based on user’s choice). The input list of files (read from directory) will be sorted by file names with some exceptions.
 
-For all examples below, let’s assume that user chose the new name to be `Holidays`.
+Before attempting to rename files, Batch File Renamer will scan the directory for files which already have a name that matches the desired pattern, which in our example would be anything that starts with `Holidays_` and has 3 digits after that and an optional extension. This operation uses Python's built in `re` module for regex pattern matching.
 
-Eg.
-Files will be renamed like so:
+If some files matching the pattern were found, the application will also check if they have numbers matching the correct range (from 1 to number of files being renamed).
+
+If such files are found, they will not be subject to renaming, and their numbers will be removed from the numbers pool used by the application. This is visible in the 2nd example below.
+
+Because of this, some files' numbers may not correspond to their place in the alphabeticaly sorted list of files. However, all files that will be renamed, will retain their order with regards to each other.
+
+This change in logic was made to prevent the situation from the previous version of the Batch File Renamer, when some files could already have a name which script was going to give to another file, which could greatly mess up numbering and could lead to some files having number higher than the number of files that was being renamed, as well as the general order being way off.
+
+## Examples
+
+### No overlap between current and new names
 ```
-IMG_123.jpg -> Holidays_1.jpg
-IMG_234.jpg -> Holidays_2.jpg
-IMG_235.jpg -> Holidays_3.jpg
-```
-
-It may however happen that some files already have a name exactly the same as the chosen new name. If they end up being in the correct spot, they will simply remain like they were
-
-Eg.
-```
-Holidays_1.jpg	->	not renamed
-IMG_234.jpg     ->	Holidays_2.jpg
-IMG_235.jpg 	->	Holidays_3.jpg
-```
-
-Another possible situation is when some files already have a name which script is going to give to another file. In the previous version of the script this resulted in a Critical error of replacing files (essentially removing some). Right now the script will attempt to find the first available file name in such a case.
-
-Eg.
-```
-Holidays_0.jpg	->  Holidays_2.jpg
-Holidays_1.jpg	-> 	not renamed
-IMG_123.jpg		->	Holidays_3.jpg
+IMG_123.jpg -> Holidays_001.jpg
+IMG_234.jpg -> Holidays_002.jpg
+IMG_235.jpg -> Holidays_003.jpg
 ```
 
-For `Holidays_0.jpg` the script will first try to rename it to `Holidays_1.jpg`, but it will fail to do so as `Holidays_1.jpg` already exists (so it would result in replacing and loss of the original `Holidays_1.jpg` file).
-Script then tries to find the first available name (still starting from 1) and ends up at `Holidays_2.jpg`.
-
-For `Holidays_1.jpg` the script will first try to rename it to `Holidays_2.jpg`, but will fail to do so as we just created such file. Script will then try to find the first available name (starting from `Holidays_1`) or to leave the current name and arrives at `Holidays_1.jpg`, which means that the file will not be renamed in the end, as this is the current name of the file.
-
+### Some files with matching names and both names numbers
+```
+ABC_123.jpg         ->  Holidays_002.jpg
+Holidays_001.jpg    ->	not renamed
+Holidays_2077.v     ->  Holidays_003.v
+IMG_234.jpg         ->	Holidays_004.jpg
+IMG_235.jpg 	    ->	Holidays_005.jpg
+```
+As is visible above, all files that were subject to renaming (eveything other than `Holidays_001.jpg`) have retained their relative order after renaming.
 
 ## Changelog
 
 ### 2025-01-26
-1. Added a confirmation dialog after clicking "Rename files" button to confirm execution
+1. Complete rework of the renaming logic
+2. Added a confirmation dialog after clicking "Rename files" button to confirm execution
 
 ### 2024-12-25
 1. Directories are now ignored when both looking for extensions and renaming

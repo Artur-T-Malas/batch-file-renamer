@@ -62,8 +62,8 @@ class Renamer:
         and to try it out visit:
         https://regex101.com/
         """
-        split_filename: list[str] = filename.split(".")
-        filename_without_extension: str = ''.join(split_filename[:-1] if len(split_filename) > 1 else split_filename)
+        split_filename: tuple[str, str] = os.path.splitext(filename)
+        filename_without_extension: str = split_filename[0]
         extracted_file_number: str = filename_without_extension.split("_")[-1]
         file_number: int = int(extracted_file_number)
         return file_number
@@ -104,18 +104,21 @@ class Renamer:
         files_matching_range: list[str] = list(filter(lambda name: file_number_getting_function(name) <= max_number, file_list))
         return files_matching_range
 
-
-    def rename_files(
+    def get_renaming_map(
             self,
-            directory: str,
             files_to_rename: list[str],
             new_batch_name: str,
             number_padding: int = 3
         ):
-
+        """
+        Prepares and returns a map of old file names to new file names (including extensions)
+        to be used for renaming.
+        Filters the input file list to check if some files have filenames and numbers already
+        matching the pattern and removes files and numbers that it finds from the renaming pool
+        """
         files_to_rename.sort()
         max_number: int = len(files_to_rename)
-        numbers_pool: set = set(range(max_number + 1))
+        numbers_pool: list[int] = sorted(list(range(1, max_number + 1)))
 
         logger.info(f"{files_to_rename = }")
 
@@ -129,52 +132,43 @@ class Renamer:
             max_number,
             self.get_file_number_from_name
         )
-        #   If yes, 
-        #       remove those numbers from the pool, 
-        #       and remove those files from the list of files_to_rename
+
+        # Remove those files and their numbers from the renaming pool
         for file in files_with_correct_numbers:
             files_to_rename.remove(file)
             numbers_pool.remove(self.get_file_number_from_name(file))
-        #   If not, 
-        #       don't do anything
+        logger.info(f"Following files have already matching names and numbers: {files_with_correct_numbers}")
 
-        logger.info(f"After looking for already renamed files: {files_to_rename = }")
+        files_map: dict[str, str] = {}
+        for old_name_with_extension in files_to_rename:
+            extension: str = os.path.splitext(old_name_with_extension)[1]
+            file_number: int = numbers_pool.pop(0)
+            new_name_with_extension: str = f'{new_batch_name}_{str(file_number).zfill(number_padding)}' + (extension if extension else '')
+            files_map[old_name_with_extension] = new_name_with_extension
 
-        # TODO:
-        # Instead of the complicated logic, since we've already checked for files already renamed to
-        # our format, don't do the actual renaming in this method
-        # and just do the mapping of "old" -> "new" and execute it somewhere else
-        # this way this function's logic will be testable!
+        return files_map
 
+    def rename_files(
+        self,
+        directory: str,
+        files_map: dict[str, str]
+    ):
+        """
+        Renames files based on the provided map (dict). Assumes that `keys` are old names
+        and `values` are new names. Both `keys` and `values` are assumed to contain necessary
+        extensions (or not if files did not have them in the first place).
+        """
+        for old_name, new_name in files_map.items():
 
-        i = 1
+            if old_name not in os.listdir(directory):
+                raise ValueError(f"File {old_name} was not present in the directory. Files map is likely incorrect")
 
-        for file in files_to_rename:
-
-            old_name, extension = os.path.splitext(file)
-            new_name = f'{new_batch_name}_{str(i).zfill(number_padding)}'
-
-            # While a file with the new name already exists in the directory,
-            # try to find either the first available name or to leave the file's current name if it matches
-            if new_name in [os.path.splitext(file_name)[0] for file_name in os.listdir(directory)] and f"{new_name}{extension}" != file:
-                logger.debug(f"File {old_name}{extension} not renamed, because {new_name}{extension} already exists in directory.")
-                k = 1
-                while new_name in [os.path.splitext(file_name)[0] for file_name in os.listdir(directory)] and f"{new_name}{extension}" != file:
-                    new_name = f'{new_batch_name}_{str(k).zfill(number_padding)}'
-                    logger.debug(f'\tTrying {new_name}{extension}')
-                    k += 1
-                    i = k
-
-            # If a file's name will not change, continue
-            if file == f"{new_name}{extension}":
-                logger.info(f"File {old_name}{extension} not renamed - new name the same as old name.")
-                i += 1
+            if new_name in os.listdir(directory):
+                logger.error(f"File {old_name} could not be renamed to {new_name}, as {new_name} already exists in the directory")
                 continue
 
-            old = os.path.join(directory, f'{old_name}{extension}')
-            new = os.path.join(directory, f'{new_name}{extension}')
+            old = os.path.join(directory, old_name)
+            new = os.path.join(directory, new_name)
 
             os.rename(old, new)
-            logger.info(f"{old_name}{extension} => {new_name}{extension}")
-
-            i += 1
+            logger.info(f"Renamed {old_name} => {new_name}")

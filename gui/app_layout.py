@@ -168,11 +168,14 @@ class AppLayout(QWidget):
         ):
             return
 
-        self.renamer.rename_files(
-            directory=self.directory,
+        renamed_files_map: dict[str, str] = self.renamer.get_renaming_map(
             files_to_rename=files_to_rename,
             new_batch_name=new_batch_name,
             number_padding=self.number_padding
+        )
+        self.renamer.rename_files(
+            directory=self.directory,
+            files_map=renamed_files_map
         )
 
         self.rename_files_btn.setEnabled(False)

@@ -52,3 +52,38 @@ def test_get_files_matching_range_default_file_number_getting() -> None:
     renamer = Renamer()
     files_matching_range: list[str] = renamer.get_files_matching_range(file_list, 123)
     assert len(files_matching_range) == 2 and "test_name_001.txt" in files_matching_range and "test_name_123.zip" in files_matching_range
+
+def test_get_renaming_map_best_case() -> None:
+    files_to_rename: list[str] = [
+        "new_york.png",
+        "test1.jpg",
+        "tokyo25.mp4"
+    ]
+    expected: set[str] = {
+        "holidays_1.png",
+        "holidays_2.jpg",
+        "holidays_3.mp4"
+    }
+    r = Renamer()
+    new_names: list[str] = r.get_renaming_map(files_to_rename, "holidays", 1).values()
+    assert set(new_names) == expected
+
+def test_get_renaming_map_some_files_already_renamed() -> None:
+    """
+    Only the files that need to be renamed should be returned in the renaming map
+    """
+    files_to_rename: list[str] = [
+        "holidays_2077.v",  # This file has a correct name, but incorrect number (way outside the correct range!)
+        "new_york.png",
+        "holidays_1.jpg",   # This file already has a correct name and number in correct range
+        "tokyo25.mp4",
+        "holidays_3.pdf"    # This file does too
+    ]
+    expected: set[str] = {
+        "holidays_2.v",
+        "holidays_4.png",
+        "holidays_5.mp4"
+    }
+    r = Renamer()
+    new_names: list[str] = r.get_renaming_map(files_to_rename, "holidays", 1).values()
+    assert set(new_names) == expected
