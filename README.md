@@ -42,6 +42,9 @@ For `Holidays_1.jpg` the script will first try to rename it to `Holidays_2.jpg`,
 
 ## Changelog
 
+### 2025-01-26
+1. Added a confirmation dialog after clicking "Rename files" button to confirm execution
+
 ### 2024-12-25
 1. Directories are now ignored when both looking for extensions and renaming
 

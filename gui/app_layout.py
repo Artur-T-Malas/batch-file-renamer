@@ -87,6 +87,21 @@ class AppLayout(QWidget):
 
         self.show_preview()
 
+    def get_confirmation(self, title: str, message: str) -> bool:
+        """
+        Launches a simple confirmation dialog window with "Apply" and "Cancel"
+        buttons. Returns `True` if "Apply" was chosen, otherwise `False`
+        """
+        dialog: QMessageBox = QMessageBox(self)
+        dialog.setWindowTitle(title)
+        dialog.setText(message)
+        dialog.setStandardButtons(
+            QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel
+        )
+        dialog.setIcon(QMessageBox.Icon.Question)
+        button_clicked = dialog.exec()
+        return button_clicked == QMessageBox.StandardButton.Apply
+
     def change_number_padding(self):
         self.number_padding_chosen = True
         self.number_padding = self.number_padding_spin_box.value()
@@ -145,6 +160,13 @@ class AppLayout(QWidget):
             file_list=self.renamer.filter_directories(self.directory),
             extensions=self.extensions
         )
+        if not self.get_confirmation(
+            title="Rename files?",
+            message=(f"Are your sure you want to rename {len(files_to_rename)} files with following extensions: ("
+                     f"{', '.join(self.extensions)}) in\n{self.directory}?\n\nWARNING: If done in a wrong directory / "
+                     "folder it may cause some programs or even operating system to stop working!")
+        ):
+            return
 
         self.renamer.rename_files(
             directory=self.directory,
