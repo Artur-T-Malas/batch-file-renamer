@@ -25,7 +25,7 @@ IMG_234.jpg -> Holidays_002.jpg
 IMG_235.jpg -> Holidays_003.jpg
 ```
 
-### Some files with matching names and both names numbers
+### Some files with matching names and both names and numbers
 ```
 ABC_123.jpg         ->  Holidays_002.jpg
 Holidays_001.jpg    ->	not renamed
@@ -39,7 +39,8 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ### 2025-01-26
 1. Complete rework of the renaming logic
-2. Added a confirmation dialog after clicking "Rename files" button to confirm execution
+2. Directories / folders can now be selected by highlighting them as well as opening
+3. Added a confirmation dialog after clicking "Rename files" button to confirm execution
 
 ### 2024-12-25
 1. Directories are now ignored when both looking for extensions and renaming
@@ -63,7 +64,6 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Add a separate toggle to also rename directories (eg. smth like `isDir` check)
 
 ## Known bugs
-- CRITICAL Folders / Directories need to be entered into in the selection dialog, not just highighted! If they are only highlighted the parent directory will be chosen!
 - Renamed files may have missing numbers in between them, or the same numbers on two or more files if the extensions are different (eg. after running the script you may end up with both `NewName_1.jpg` and `NewName_1.png` files)
 
 ## Fixes to do
@@ -74,4 +74,3 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Add typing where possible
 - Use logger instead of print functions
 - Store logs in a file
-- Rework renaming logic

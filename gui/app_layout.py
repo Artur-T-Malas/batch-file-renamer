@@ -1,5 +1,5 @@
 import os
-from typing import Callable
+from typing import Callable, NoReturn
 
 from PyQt6.QtWidgets import (
     QWidget,
@@ -102,6 +102,17 @@ class AppLayout(QWidget):
         button_clicked = dialog.exec()
         return button_clicked == QMessageBox.StandardButton.Apply
 
+    def show_error_message_messagebox(self, title: str, message: str) -> None:
+        """
+        Displays an error messagebox with the provided title and message.
+        """
+        dialog: QMessageBox = QMessageBox(self)
+        dialog.setWindowTitle(title)
+        dialog.setText(message)
+        dialog.setStandardButtons(QMessageBox.StandardButton.Ok)
+        dialog.setIcon(QMessageBox.Icon.Warning)
+        dialog.exec()
+
     def change_number_padding(self):
         self.number_padding_chosen = True
         self.number_padding = self.number_padding_spin_box.value()
@@ -112,7 +123,15 @@ class AppLayout(QWidget):
         self.choose_directory_dialog.exec()
 
     def choose_files(self) -> None:
-        self.directory = self.choose_directory_dialog.directory().absolutePath()
+        selected_files = self.choose_directory_dialog.selectedFiles()
+        if len(selected_files) != 1:
+            self.show_error_message_messagebox("Wrong selection", "Only 1 directory / folder must be selected")
+            return
+        selected_file: str = selected_files[0]
+        if not os.path.isdir(selected_file):
+            self.show_error_message_messagebox("Wrong selection", "Selected file instead of a directory / folder\nPlease select a single directory / folder")
+            return
+        self.directory = selected_file
 
         # If the padding was not manually chosen, create it automatically based on number of digits in the count of files to rename
         if not self.number_padding_chosen:
@@ -127,13 +146,13 @@ class AppLayout(QWidget):
             dlg.setIcon(QMessageBox.Icon.Critical)
             self.rename_files_btn.setEnabled(False)
             dlg.exec()
+            return
 
-        else:
-            self.directory_label.setText("Directory with files to rename: {}".format(self.directory))
-            self.rename_files_btn.setText('Rename files')
-            self.rename_files_btn.setEnabled(True)
-            self.clear_extension_choosing_panel()
-            self.create_extension_choosing_panel(self.renamer.get_all_file_extensions(self.directory))
+        self.directory_label.setText("Directory with files to rename: {}".format(self.directory))
+        self.rename_files_btn.setText('Rename files')
+        self.rename_files_btn.setEnabled(True)
+        self.clear_extension_choosing_panel()
+        self.create_extension_choosing_panel(self.renamer.get_all_file_extensions(self.directory))
 
     def show_preview(self):
         input = self.new_name_input.text()
