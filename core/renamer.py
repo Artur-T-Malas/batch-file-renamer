@@ -123,7 +123,7 @@ class Renamer:
         logger.info(f"{files_to_rename = }")
 
         # Check if any files already have a name that matches the new one
-        pattern: str = f"^{new_batch_name}_\d{{{number_padding}}}.?\S*$"
+        pattern: str = f"^{new_batch_name}_\d{{{number_padding}}}\.\S*$|^{new_batch_name}_\d{{{number_padding}}}$"
         files_with_names_matching_pattern: list[str] = self.get_files_matching_pattern(files_to_rename, pattern)
 
         # If those files were found, check if their numbers are in the correct range
