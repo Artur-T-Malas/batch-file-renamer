@@ -64,7 +64,7 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Add a separate toggle to also rename directories (eg. smth like `isDir` check)
 
 ## Known bugs
-- Renamed files may have missing numbers in between them, or the same numbers on two or more files if the extensions are different (eg. after running the script you may end up with both `NewName_1.jpg` and `NewName_1.png` files)
+- None at the moment
 
 ## Fixes to do
 - Make the extension list "fold" when it get's too wide
