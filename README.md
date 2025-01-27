@@ -1,6 +1,34 @@
 ![RenamerEmpty](./docs/img/renamer_empty.png "Application with no input")
 ![RenamerWithInput](./docs/img/renamer_with_input.png "Application with input")
 
+# Disclaimer
+> WARNING: This software is not a finished product and may cause irreversible damage to files and even the whole operating system.
+Please note that neither the main developer nor any contributors take any reponsibility for damage that may be caused by using this software.
+Use it at your own responsibility and exercise caution.
+
+# How to use
+1. Install Python 3.12 or higher
+2. Install `poetry` dependency management tool
+3. Download the software from the repository by running the command below 
+```
+git clone https://github.com/Artur-T-Malas/batch-file-renamer.git
+```
+4. Install the necessary dependencies by running the following command
+```
+poetry install
+```
+5. Open a terminal and navigate to the application's root directory and run the following commands if you're on Windows
+```
+.venv/Scripts/activate
+python main.py
+```
+or the commands below if you're using a Mac or Linux-based computer
+```
+source .venv/bin/activate
+python main.py
+```
+
+
 # Renaming Logic
 For all examples below, let’s assume that user chose the new name to be `Holidays` and the number of digit characters to `3`.
 
@@ -37,6 +65,11 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-01-27
+1. [UI] Separate extension panel from renaming panel
+2. [UI] Add enabling/disabling of extensions panel. It will be disabled until a valid directory / folder is selected. It will get enabled as soon as a valid directory is chosen, and will be again disabled if an invalid directory gets chosen.
+2. [UI] Add enabling/disabling of renaming panel. It will be disabled until at least one extension is chosen in the extensions panel. If extensions are deselected it will be disabled again
+
 ### 2025-01-26
 1. Complete rework of the renaming logic
 2. Directories / folders can now be selected by highlighting them as well as opening
@@ -69,7 +102,6 @@ As is visible above, all files that were subject to renaming (eveything other th
 ## Fixes to do
 - Make the extension list "fold" when it get's too wide
 - Automatically resize the window back to a smaller side if it got extended by something like a long directory path or file name or a lot of extensions
-- Hide the extensions Group Box until a directory is selected
 - Ignore extensions like .DS_Store etc.
 - Add typing where possible
 - Use logger instead of print functions
