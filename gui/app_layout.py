@@ -46,8 +46,10 @@ class AppLayout(QWidget):
         self.rename_files_btn = QPushButton("Rename files", self)
         self.rename_files_btn.setEnabled(False)
         directory_group_box = QGroupBox("Directory", self)
-        renaming_group_box = QGroupBox("Renaming", self)
+        self.renaming_group_box = QGroupBox("Renaming", self)
+        self.renaming_group_box.setEnabled(False)
         self.extensions_group_box = QGroupBox("Only files with chosen extensions will be renamed", self)
+        self.extensions_group_box.setEnabled(False)
 
         # Connect signals
         self.select_files_to_rename.clicked.connect(self.launch_choose_dir_dialog)
@@ -65,10 +67,11 @@ class AppLayout(QWidget):
         directory_group_box.setLayout(directory_layout)
         layout.addWidget(directory_group_box)
 
-        renaming_layout = QVBoxLayout()
         self.checkboxes_layout = QHBoxLayout()
         self.extensions_group_box.setLayout(self.checkboxes_layout)
-        renaming_layout.addWidget(self.extensions_group_box)
+        layout.addWidget(self.extensions_group_box)
+
+        renaming_layout = QVBoxLayout()
         renaming_layout.addWidget(self.new_name_preview)
 
         grid_rename_layout = QGridLayout()
@@ -80,8 +83,8 @@ class AppLayout(QWidget):
         renaming_layout.addLayout(grid_rename_layout)
         renaming_layout.addWidget(self.rename_files_btn)
 
-        renaming_group_box.setLayout(renaming_layout)
-        layout.addWidget(renaming_group_box)
+        self.renaming_group_box.setLayout(renaming_layout)
+        layout.addWidget(self.renaming_group_box)
 
         self.setLayout(layout)
 
@@ -125,10 +128,12 @@ class AppLayout(QWidget):
     def choose_files(self) -> None:
         selected_files = self.choose_directory_dialog.selectedFiles()
         if len(selected_files) != 1:
+            self.disable_and_clear_extension_and_renaming_panels()
             self.show_error_message_messagebox("Wrong selection", "Only 1 directory / folder must be selected")
             return
         selected_file: str = selected_files[0]
         if not os.path.isdir(selected_file):
+            self.disable_and_clear_extension_and_renaming_panels()
             self.show_error_message_messagebox("Wrong selection", "Selected file instead of a directory / folder\nPlease select a single directory / folder")
             return
         self.directory = selected_file
@@ -146,11 +151,13 @@ class AppLayout(QWidget):
             dlg.setIcon(QMessageBox.Icon.Critical)
             self.rename_files_btn.setEnabled(False)
             dlg.exec()
+            self.disable_and_clear_extension_and_renaming_panels()
             return
 
         self.directory_label.setText("Directory with files to rename: {}".format(self.directory))
         self.rename_files_btn.setText('Rename files')
         self.rename_files_btn.setEnabled(True)
+        self.extensions_group_box.setEnabled(True)
         self.clear_extension_choosing_panel()
         self.create_extension_choosing_panel(self.renamer.get_all_file_extensions(self.directory))
 
@@ -162,7 +169,7 @@ class AppLayout(QWidget):
     def create_extension_choosing_panel(self, extensions: set[str]) -> None:
         extensions_list: list[str] = sorted(list(extensions))
         for extension in extensions_list:
-            extension_checkbox = ExtensionCheckbox(extension, self, self.extensions)
+            extension_checkbox = ExtensionCheckbox(extension, self, self.extensions, self.renaming_group_box)
             self.checkboxes_layout.addWidget(extension_checkbox.checkbox)
             self.checkboxes.append(extension_checkbox)
     
@@ -171,6 +178,14 @@ class AppLayout(QWidget):
             self.checkboxes_layout.removeWidget(checkbox.checkbox)
         self.checkboxes.clear()
         self.extensions.clear()
+
+    def disable_and_clear_extension_and_renaming_panels(self) -> None:
+        """
+        Disables both panels and clears extension panel
+        """
+        self.renaming_group_box.setEnabled(False)
+        self.extensions_group_box.setEnabled(False)
+        self.clear_extension_choosing_panel()
 
     def rename_files(self) -> None:
         new_batch_name: str = self.new_name_input.text()
