@@ -65,6 +65,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-01-28
+1. [UI] Automatically wrap the extensions list to a maximum of 5 column
+
 ### 2025-01-27
 1. [UI] Separate extension panel from renaming panel
 2. [UI] Add enabling/disabling of extensions panel. It will be disabled until a valid directory / folder is selected. It will get enabled as soon as a valid directory is chosen, and will be again disabled if an invalid directory gets chosen.
@@ -100,7 +103,6 @@ As is visible above, all files that were subject to renaming (eveything other th
 - None at the moment
 
 ## Fixes to do
-- Make the extension list "fold" when it get's too wide
 - Automatically resize the window back to a smaller side if it got extended by something like a long directory path or file name or a lot of extensions
 - Ignore extensions like .DS_Store etc.
 - Add typing where possible

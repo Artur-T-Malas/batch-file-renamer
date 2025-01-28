@@ -12,7 +12,13 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QGridLayout,
     QFileDialog,
-    QMessageBox
+    QMessageBox,
+)
+from PyQt6.QtGui import (
+    QResizeEvent
+)
+from PyQt6.QtCore import (
+    QSize
 )
 
 from .extension_checkbox import ExtensionCheckbox
@@ -45,7 +51,7 @@ class AppLayout(QWidget):
         self.new_name_input = QLineEdit(self)
         self.rename_files_btn = QPushButton("Rename files", self)
         self.rename_files_btn.setEnabled(False)
-        directory_group_box = QGroupBox("Directory", self)
+        self.directory_group_box = QGroupBox("Directory", self)
         self.renaming_group_box = QGroupBox("Renaming", self)
         self.renaming_group_box.setEnabled(False)
         self.extensions_group_box = QGroupBox("Only files with chosen extensions will be renamed", self)
@@ -59,17 +65,17 @@ class AppLayout(QWidget):
         self.rename_files_btn.clicked.connect(self.rename_files)
 
         # Add PyQt elements to layout
-        layout = QVBoxLayout(self)
+        self.main_layout = QVBoxLayout(self)
 
         directory_layout = QVBoxLayout()
         directory_layout.addWidget(self.directory_label)
         directory_layout.addWidget(self.select_files_to_rename)
-        directory_group_box.setLayout(directory_layout)
-        layout.addWidget(directory_group_box)
+        self.directory_group_box.setLayout(directory_layout)
+        self.main_layout.addWidget(self.directory_group_box)
 
-        self.checkboxes_layout = QHBoxLayout()
+        self.checkboxes_layout = QGridLayout()
         self.extensions_group_box.setLayout(self.checkboxes_layout)
-        layout.addWidget(self.extensions_group_box)
+        self.main_layout.addWidget(self.extensions_group_box)
 
         renaming_layout = QVBoxLayout()
         renaming_layout.addWidget(self.new_name_preview)
@@ -84,9 +90,9 @@ class AppLayout(QWidget):
         renaming_layout.addWidget(self.rename_files_btn)
 
         self.renaming_group_box.setLayout(renaming_layout)
-        layout.addWidget(self.renaming_group_box)
+        self.main_layout.addWidget(self.renaming_group_box)
 
-        self.setLayout(layout)
+        self.setLayout(self.main_layout)
 
         self.show_preview()
 
@@ -166,11 +172,22 @@ class AppLayout(QWidget):
         str_to_display = "Files will be renamed to: {}_{}, {}_{} and so on".format(input, "1".zfill(self.number_padding), input , "2".zfill(self.number_padding))
         self.new_name_preview.setText(str_to_display)
 
-    def create_extension_choosing_panel(self, extensions: set[str]) -> None:
+    def create_extension_choosing_panel(self, extensions: set[str], max_cols: int = 5) -> None:
+        # Make all columns the same width
+        for i in range(max_cols):
+            self.checkboxes_layout.setColumnMinimumWidth(i, 50)
+            self.checkboxes_layout.setColumnStretch(i, 1)
+
         extensions_list: list[str] = sorted(list(extensions))
+        col: int = 0
+        row: int = 0
         for extension in extensions_list:
             extension_checkbox = ExtensionCheckbox(extension, self, self.extensions, self.renaming_group_box)
-            self.checkboxes_layout.addWidget(extension_checkbox.checkbox)
+            if col == max_cols:
+                col = 0
+                row += 1
+            self.checkboxes_layout.addWidget(extension_checkbox.checkbox, row, col)
+            col += 1
             self.checkboxes.append(extension_checkbox)
     
     def clear_extension_choosing_panel(self) -> None:
