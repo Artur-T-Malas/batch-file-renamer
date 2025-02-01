@@ -1,4 +1,5 @@
-![RenamerEmpty](./docs/img/renamer_empty.png "Application with no input")
+![RenamerEmpty](./docs/img/renamer_empty.png "Application with no directory chosen")
+![RenamerWithDirectoryChosen](./docs/img/renamer_with_dir_chosen.png "Application with directory chosen")
 ![RenamerWithInput](./docs/img/renamer_with_input.png "Application with input")
 
 # Disclaimer
@@ -65,6 +66,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-02-01
+1. [UI] Fix bug which prevented automatic shrinking of the window, after it automatically grew due to a very long file name being shown in the preview
+
 ### 2025-01-28
 1. [UI] Automatically wrap the extensions list to a maximum of 5 column
 
@@ -100,10 +104,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Add a separate toggle to also rename directories (eg. smth like `isDir` check)
 
 ## Known bugs
-- None at the moment
+- None
 
 ## Fixes to do
-- Automatically resize the window back to a smaller side if it got extended by something like a long directory path or file name or a lot of extensions
 - Ignore extensions like .DS_Store etc.
 - Add typing where possible
 - Use logger instead of print functions

@@ -66,6 +66,8 @@ class AppLayout(QWidget):
 
         # Add PyQt elements to layout
         self.main_layout = QVBoxLayout(self)
+        # This allows for the layout to resize on it's own, without the QMainWindow
+        self.main_layout.setSizeConstraint(QVBoxLayout.SizeConstraint.SetFixedSize)
 
         directory_layout = QVBoxLayout()
         directory_layout.addWidget(self.directory_label)
@@ -166,6 +168,16 @@ class AppLayout(QWidget):
         self.extensions_group_box.setEnabled(True)
         self.clear_extension_choosing_panel()
         self.create_extension_choosing_panel(self.renamer.get_all_file_extensions(self.directory))
+
+    def resizeEvent(self, event: QResizeEvent | None) -> None:
+        """
+        This custom implementation of event handler is required
+        to make the parent window resize automatically with
+        this layout
+        """
+        window: QWidget | None = self.window()
+        if window and event:
+            window.adjustSize()
 
     def show_preview(self):
         input = self.new_name_input.text()

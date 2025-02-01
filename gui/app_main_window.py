@@ -8,7 +8,7 @@ class AppMainWindow(QMainWindow):
             self,
             app_layout: AppLayout,
             window_title: str
-        ):
+    ) -> None:
         super().__init__()
 
         self.setWindowTitle(window_title)
