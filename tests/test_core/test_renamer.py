@@ -87,3 +87,30 @@ def test_get_renaming_map_some_files_already_renamed() -> None:
     r = Renamer()
     new_names: list[str] = r.get_renaming_map(files_to_rename, "holidays", 1).values()
     assert set(new_names) == expected
+
+@pytest.mark.parametrize(
+        "new_name, valid",
+        [
+            ("test", True),
+            ("Test", True),
+            ("test1", True),
+            ("Test1", True),
+            ("test-1", True),
+            ("Test-1", True),
+            ("test_1", True),
+            ("Test_1", True),
+            ("test 1", True),
+            ("Test 1", True),
+            ("test/1", False),
+            ("test\1", False),
+            ("test+1", False),
+            ("test$1", False),
+            ("test#1", False)
+        ]
+)
+def test_new_name_validation_default_pattern(new_name: str, valid: bool) -> None:
+    """
+    Checks the validation of new names using the default pattern
+    """
+    r = Renamer()
+    assert r.validate_new_name(new_name) == valid

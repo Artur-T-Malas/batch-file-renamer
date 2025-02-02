@@ -15,8 +15,12 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 
+DEFAULT_ALLOWED_PATTERN = r"^[a-zA-Z0-9-_ ]+$" # Letter, digits, -, _ and spaces
+
+
 class Renamer:
-    def __init__(self): ...
+    def __init__(self, pattern: str = DEFAULT_ALLOWED_PATTERN) -> None:
+        self.pattern: Pattern = re.compile(pattern)
 
     def get_all_file_extensions(self, path) -> set[str]:
         file_list: list[str] = self.filter_directories(path)
@@ -103,6 +107,19 @@ class Renamer:
             file_number_getting_function = self.get_file_number_from_name
         files_matching_range: list[str] = list(filter(lambda name: file_number_getting_function(name) <= max_number, file_list))
         return files_matching_range
+
+    def validate_new_name(
+            self,
+            new_name: str,
+            pattern: Pattern | None = None
+    ) -> bool:
+        """
+        Validates the `new_name` by trying to match it agains REGEX pattern provided or
+        default one stored in `self.pattern` variable, if not explicitly provided.
+        """
+        pattern = pattern if pattern else self.pattern
+        return bool(re.match(pattern, new_name))
+
 
     def get_renaming_map(
             self,

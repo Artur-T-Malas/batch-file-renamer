@@ -18,8 +18,9 @@ from PyQt6.QtGui import (
     QResizeEvent
 )
 from PyQt6.QtCore import (
-    QSize
+    QSize, Qt
 )
+
 
 from .extension_checkbox import ExtensionCheckbox
 from core.renamer import Renamer
@@ -44,6 +45,7 @@ class AppLayout(QWidget):
         self.directory_label = QLabel("Directory with files to rename: ", self)
         self.select_files_to_rename = QPushButton("Select directory with files to rename", self)
         self.new_name_preview = QLabel("", self)
+        self.new_name_preview.setWordWrap(True)
         new_name_label = QLabel("New name for this file batch", self)
         self.number_padding_label = QLabel("Length of \"0\" padding", self)
         self.number_padding_spin_box = QSpinBox(self)
@@ -163,11 +165,12 @@ class AppLayout(QWidget):
             return
 
         self.directory_label.setText("Directory with files to rename: {}".format(self.directory))
-        self.rename_files_btn.setText('Rename files')
-        self.rename_files_btn.setEnabled(True)
         self.extensions_group_box.setEnabled(True)
         self.clear_extension_choosing_panel()
         self.create_extension_choosing_panel(self.renamer.get_all_file_extensions(self.directory))
+        self.rename_files_btn.setText('Rename files')
+        if self.new_name_input.text() != "":
+            self.rename_files_btn.setEnabled(True)
 
     def resizeEvent(self, event: QResizeEvent | None) -> None:
         """
@@ -179,9 +182,24 @@ class AppLayout(QWidget):
         if window and event:
             window.adjustSize()
 
-    def show_preview(self):
-        input = self.new_name_input.text()
-        str_to_display = "Files will be renamed to: {}_{}, {}_{} and so on".format(input, "1".zfill(self.number_padding), input , "2".zfill(self.number_padding))
+    def show_preview(self) -> None:
+        input: str = self.new_name_input.text()
+        if input == "":
+            str_to_display: str = "Enter new name to see the preview"
+            self.rename_files_btn.setEnabled(False)
+            self.rename_files_btn.setText("Can't rename files")
+            self.new_name_preview.setStyleSheet(None)
+
+        elif self.renamer.validate_new_name(input):
+            str_to_display = "Files will be renamed to: {}_{}, {}_{} and so on".format(input, "1".zfill(self.number_padding), input , "2".zfill(self.number_padding))
+            self.rename_files_btn.setEnabled(True)
+            self.rename_files_btn.setText("Rename files")
+            self.new_name_preview.setStyleSheet(None)
+        else:
+            str_to_display = "Invalid new name. Only lowercase and uppercase letters, digits, \"-\", \"_\" and spaces are allowed!"
+            self.rename_files_btn.setEnabled(False)
+            self.rename_files_btn.setText("Can't rename files")
+            self.new_name_preview.setStyleSheet("color: red;")
         self.new_name_preview.setText(str_to_display)
 
     def create_extension_choosing_panel(self, extensions: set[str], max_cols: int = 5) -> None:

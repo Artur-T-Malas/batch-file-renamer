@@ -66,6 +66,12 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-02-02
+1. [Logic] Add REGEX validation to file names, allow only for lowercase/uppercase letters, digits, "-", "_" and spaces
+2. [UI] Show an error message in the new name preview if an invalid name was chosen and disable the "Rename files" button
+
+![RenamerWithInvalidInput](./docs/img/renamer_invalid_new_name.png)
+
 ### 2025-02-01
 1. [UI] Fix bug which prevented automatic shrinking of the window, after it automatically grew due to a very long file name being shown in the preview
 
@@ -96,7 +102,6 @@ As is visible above, all files that were subject to renaming (eveything other th
 2. By default apply the padding automatically based on the number of files in the choosen directory
 
 ## Features to add
-- Filename input validation (REGEX) (eg. no "/" and "\\")
 - Be able to select specific files to renames (instead of whole directories) - could be with a switch (radio button) to let user decide whether they want whole directory or just some files
 - Add a switch (checkbox maybe or iPhone-like switch) to have the number padding only automatic (disable user input) or forced by user (still the default value will be automatic)
 - Add a loader (based on the number of files already renamed vs remaining)
@@ -107,6 +112,8 @@ As is visible above, all files that were subject to renaming (eveything other th
 - None
 
 ## Fixes to do
+- Reset the "Rename files" button if the input name or extensions selection changes without having to re-choose a directory again
+- Instead of showing the message on the "Rename files" button, display a message box showing either the success/failure of renaming operation eg. "Succesfully renamed 2024 of 2025 files"
 - Ignore extensions like .DS_Store etc.
 - Add typing where possible
 - Use logger instead of print functions
