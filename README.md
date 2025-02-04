@@ -66,6 +66,10 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-02-04
+1. [Fix] Fix issue not allowing to choose folders on Windows 11
+2. [UI] Only allow to choose directories/folders in the file dialog
+
 ### 2025-02-02
 1. [Logic] Add REGEX validation to file names, allow only for lowercase/uppercase letters, digits, "-", "_" and spaces
 2. [UI] Show an error message in the new name preview if an invalid name was chosen and disable the "Rename files" button

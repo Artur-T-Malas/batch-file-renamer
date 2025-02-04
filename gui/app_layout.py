@@ -21,7 +21,6 @@ from PyQt6.QtCore import (
     QSize, Qt
 )
 
-
 from .extension_checkbox import ExtensionCheckbox
 from core.renamer import Renamer
 
@@ -132,6 +131,7 @@ class AppLayout(QWidget):
 
     def launch_choose_dir_dialog(self):
         self.choose_directory_dialog = QFileDialog(self, "Choose the directory")
+        self.choose_directory_dialog.setFileMode(QFileDialog.FileMode.Directory)
         self.choose_directory_dialog.accepted.connect(self.choose_files)
         self.choose_directory_dialog.exec()
 
