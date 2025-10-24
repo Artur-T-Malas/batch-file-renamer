@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 from core.renamer import Renamer
 from gui.app_layout import AppLayout

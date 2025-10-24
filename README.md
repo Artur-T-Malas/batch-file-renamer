@@ -14,19 +14,23 @@ Use it at your own responsibility and exercise caution.
 ```
 git clone https://github.com/Artur-T-Malas/batch-file-renamer.git
 ```
-4. Install the necessary dependencies by running the following command
+4. Install the necessary dependencies (PyQt6) by either running the following command
 ```
 poetry install
+```
+or
+```
+pip install PyQt6
 ```
 5. Open a terminal and navigate to the application's root directory and run the following commands if you're on Windows
 ```
 .venv/Scripts/activate
-python main.py
+python app/main.py
 ```
 or the commands below if you're using a Mac or Linux-based computer
 ```
 source .venv/bin/activate
-python main.py
+python app/main.py
 ```
 
 
@@ -122,3 +126,6 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Add typing where possible
 - Use logger instead of print functions
 - Store logs in a file
+
+## Other chores to do
+- Instead of importing the `Renamer` inside `app_layout.py` file, create a separate file with a `Protocol` class `Renamer` and import this instead, to remove the coupling

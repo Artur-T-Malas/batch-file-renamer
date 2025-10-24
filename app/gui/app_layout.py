@@ -1,7 +1,6 @@
 import os
-from typing import Callable, NoReturn
 
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget,
     QLabel,
     QPushButton,
@@ -9,16 +8,12 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QGroupBox,
     QVBoxLayout,
-    QHBoxLayout,
     QGridLayout,
     QFileDialog,
     QMessageBox,
 )
-from PyQt6.QtGui import (
+from PySide6.QtGui import (
     QResizeEvent
-)
-from PyQt6.QtCore import (
-    QSize, Qt
 )
 
 from .extension_checkbox import ExtensionCheckbox
@@ -29,7 +24,7 @@ class AppLayout(QWidget):
     def __init__(
             self,
             renamer: Renamer
-        ):
+    ):
         super().__init__()
 
         self.renamer = renamer
@@ -261,5 +256,3 @@ class AppLayout(QWidget):
 
         self.rename_files_btn.setEnabled(False)
         self.rename_files_btn.setText('Files renamed succesfully. Choose next directory.')
-
-    
