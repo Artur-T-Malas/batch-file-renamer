@@ -22,7 +22,7 @@ class Renamer:
     def __init__(self, pattern: str = DEFAULT_ALLOWED_PATTERN) -> None:
         self.pattern: Pattern = re.compile(pattern)
 
-    def get_all_file_extensions(self, path) -> set[str]:
+    def get_all_file_extensions(self, path: str) -> set[str]:
         file_list: list[str] = self.filter_directories(path)
         extensions: list[str] = []
         for file in file_list:
@@ -126,7 +126,7 @@ class Renamer:
             files_to_rename: list[str],
             new_batch_name: str,
             number_padding: int = 3
-        ):
+        ) -> dict[str, str]:
         """
         Prepares and returns a map of old file names to new file names (including extensions)
         to be used for renaming.
@@ -169,7 +169,7 @@ class Renamer:
         self,
         directory: str,
         files_map: dict[str, str]
-    ):
+    ) -> None:
         """
         Renames files based on the provided map (dict). Assumes that `keys` are old names
         and `values` are new names. Both `keys` and `values` are assumed to contain necessary

@@ -17,7 +17,7 @@ from PySide6.QtGui import (
 )
 
 from .extension_checkbox import ExtensionCheckbox
-from core.renamer import Renamer
+from core.models import Renamer
 
 
 class AppLayout(QWidget):
