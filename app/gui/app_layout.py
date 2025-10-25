@@ -17,13 +17,13 @@ from PySide6.QtGui import (
 )
 
 from .extension_checkbox import ExtensionCheckbox
-from core.models import Renamer
+from core.models import IRenamer
 
 
 class AppLayout(QWidget):
     def __init__(
             self,
-            renamer: Renamer
+            renamer: IRenamer
     ):
         super().__init__()
 

@@ -2,7 +2,7 @@ from typing import Protocol
 from re import Pattern
 
 
-class Renamer(Protocol):
+class IRenamer(Protocol):
     """Protocol class for a file renamer used by the application.
 
     Used for static type checking without having
