@@ -128,4 +128,3 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Store logs in a file
 
 ## Other chores to do
-- Instead of importing the `Renamer` inside `app_layout.py` file, create a separate file with a `Protocol` class `Renamer` and import this instead, to remove the coupling
