@@ -1,4 +1,8 @@
-from typing import Protocol
+from typing import (
+    Any,
+    Callable,
+    Protocol
+)
 from re import Pattern
 
 
@@ -47,4 +51,46 @@ class IRenamer(Protocol):
             directory: str,
             files_map: dict[str, str]
     ) -> None:
+        ...
+
+
+class IWorker(Protocol):
+    """Protocol class for a worker thread used by the application.
+
+    Used for static type checking without having
+    to import the actual `Worker` class.
+
+    Provides a blueprint for creating other workers
+    to be used plug&play in the app.
+    """
+
+    def __init__(self, fn: Callable, *args, **kwargs) -> None:
+        """Initialise the worker thread.
+
+        Args:
+            fn (Callable): The function to be executed.
+            args: The arguments to be passed to `fn`.
+            kwargs: The keyword arguments to be passed to `fn`.
+        """
+        ...
+
+    def run(self) -> None:
+        """Run the runner function with passed args, kwargs."""
+        ...
+
+
+class ISignal(Protocol):
+    """Protocol class for a signal used by PySide/PyQt.
+
+    Used for static type checking without having
+    to import the actual `Signal` class.
+    """
+
+    def emit(self, value: Any) -> None:
+        """Emit the signal.
+
+        Args:
+            value (Any): The value to be emitted
+                by the signal.
+        """
         ...

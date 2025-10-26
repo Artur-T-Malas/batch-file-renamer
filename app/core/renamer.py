@@ -9,6 +9,9 @@ import os
 import re
 from collections.abc import Callable
 from re import Pattern
+import time
+
+from core.models import ISignal
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +32,7 @@ class Renamer:
             old_name, extension = os.path.splitext(file)
             extensions.append(extension)
         return set(extensions)
-    
+
     def filter_directories(
         self,
         path: str
@@ -165,16 +168,18 @@ class Renamer:
 
         return files_map
 
-    def rename_files(
+    def rename_files_from_file_map(
         self,
         directory: str,
         files_map: dict[str, str]
     ) -> None:
-        """
-        Renames files based on the provided map (dict). Assumes that `keys` are old names
-        and `values` are new names. Both `keys` and `values` are assumed to contain necessary
+        """Rename files based on the provided map (dict).
+
+        Assume that `keys` are old names and `values` are new names.
+        Both `keys` and `values` are assumed to contain necessary
         extensions (or not if files did not have them in the first place).
         """
+        logger.info(f'{directory=}')  # DEBUG
         for old_name, new_name in files_map.items():
 
             if old_name not in os.listdir(directory):
@@ -187,5 +192,55 @@ class Renamer:
             old = os.path.join(directory, old_name)
             new = os.path.join(directory, new_name)
 
-            os.rename(old, new)
+            try:
+                os.rename(old, new)
+
+            except OSError as e:
+                logger.error(
+                    f"Failed renaming ({old_name} => {new_name}). "
+                    f"{type(e).__name__}: {str(e)}."
+                )
+                continue
+
             logger.info(f"Renamed {old_name} => {new_name}")
+
+    def rename_files(
+            self,
+            directory: str,
+            files_to_rename: list[str],
+            new_batch_name: str,
+            progress_callback: ISignal,
+            number_padding: int = 3
+    ) -> None:
+        """Rename files with the new name and a number.
+
+        Args:
+            directory (str): Path to directory containing files to be renamed.
+            files_to_rename (list[str]): List of files to be renamed including
+                their appropriate extensions.
+            new_batch_name (str): New name to be applied
+                to all files being renamed.
+            number_padding (int): The minimum number of the numeric
+                suffix length.
+        """
+
+        renaming_map: dict[str, str] = self.get_renaming_map(
+            files_to_rename=files_to_rename,
+            new_batch_name=new_batch_name,
+            number_padding=number_padding
+        )
+
+        total: int = len(renaming_map)
+
+        # DEBUG - make the renaming process always run at least 5 s
+        sleep_time: float = 5 / total
+        logger.info(f'{sleep_time=}')
+
+        for index, key in enumerate(renaming_map):
+            self.rename_files_from_file_map(
+                directory=directory,
+                files_map={key: renaming_map[key]}
+            )
+            percent_done: float = (index / total) * 100
+            progress_callback.emit(percent_done)
+            time.sleep(sleep_time)

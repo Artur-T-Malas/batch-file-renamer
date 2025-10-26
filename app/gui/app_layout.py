@@ -1,5 +1,7 @@
 import os
 
+from PySide6.QtCore import QThreadPool
+
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,
@@ -18,6 +20,7 @@ from PySide6.QtGui import (
 
 from .extension_checkbox import ExtensionCheckbox
 from core.models import IRenamer
+from core.worker import Worker
 
 
 class AppLayout(QWidget):
@@ -26,6 +29,10 @@ class AppLayout(QWidget):
             renamer: IRenamer
     ):
         super().__init__()
+
+        self.threadpool = QThreadPool()
+        thread_count = self.threadpool.maxThreadCount()
+        print(f"Multithreading with maximum {thread_count} threads.")
 
         self.renamer = renamer
 
@@ -230,6 +237,11 @@ class AppLayout(QWidget):
         self.clear_extension_choosing_panel()
 
     def rename_files(self) -> None:
+        # Disable the buttons and checkboxes
+        self.rename_files_btn.setEnabled(False)
+        self.select_files_to_rename.setEnabled(False)
+        self.extensions_group_box.setEnabled(False)
+
         new_batch_name: str = self.new_name_input.text()
 
         files_to_rename: list[str] = self.renamer.filter_extensions(
@@ -242,17 +254,61 @@ class AppLayout(QWidget):
                      f"{', '.join(self.extensions)}) in\n{self.directory}?\n\nWARNING: If done in a wrong directory / "
                      "folder it may cause some programs or even operating system to stop working!")
         ):
+            self.rename_files_btn.setEnabled(True)
+            self.select_files_to_rename.setEnabled(True)
+            self.extensions_group_box.setEnabled(True)
             return
 
-        renamed_files_map: dict[str, str] = self.renamer.get_renaming_map(
+        worker = Worker(
+            self.renamer.rename_files,
+            directory=self.directory,
             files_to_rename=files_to_rename,
             new_batch_name=new_batch_name,
             number_padding=self.number_padding
         )
-        self.renamer.rename_files(
-            directory=self.directory,
-            files_map=renamed_files_map
+
+        worker.signals.result.connect(self.handle_output)
+        worker.signals.error.connect(self.handle_errors)
+        worker.signals.finished.connect(self.handle_complete)
+        worker.signals.progress.connect(self.show_progress)
+
+        self.threadpool.start(worker)
+
+    def handle_output(self, s: str) -> None:
+        print(s)
+
+    def handle_complete(self) -> None:
+        """Handle completion of a renaming task.
+
+        Sets "Rename" button's name to an appropriate message.
+        Enables the directory selection button and extension
+        selection checkboxes.
+        """
+
+        self.rename_files_btn.setText(
+            'Files renamed succesfully. Choose next directory.'
+        )
+        self.select_files_to_rename.setEnabled(True)
+        self.extensions_group_box.setEnabled(True)
+
+    def show_progress(self, n: int) -> None:
+        """Show progress to the user.
+
+        Currently shows the progress as a percentage visible
+        in the disabled "Rename" button.
+
+        TODO:
+            - Show it in a dialog instead.
+        """
+
+        self.rename_files_btn.setText(
+            f'Renaming... {n:.0f}% done'
         )
 
-        self.rename_files_btn.setEnabled(False)
-        self.rename_files_btn.setText('Files renamed succesfully. Choose next directory.')
+    def handle_errors(self, exc: tuple[type, str, str]) -> None:
+        print(
+            f"Error while renaming files: {exc[0].__name__}. "
+            f"{exc[1]}."
+        )
+        # Show traceback
+        # print(exc[2])
