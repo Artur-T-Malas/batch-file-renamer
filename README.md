@@ -70,6 +70,14 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-10-26
+1. [Threading] Move the file renaming process to a background thread using `QThreadPool` and `QRunnable` (`Worker` class)
+2. [UI] Disable UI controls (buttons, checkboxes) during renaming to prevent user interaction while the operation is in progress
+3. [UI] Add progress reporting: the "Rename files" button now displays percentage completion during renaming
+4. [UI] Update logic to re-enable controls and show a success message when renaming completes
+5. [Other] Rename old `rename_files` function to `rename_files_from_file_map`, and create new `rename_files` which calls both `get_renaming_map` and `rename_files_from_map`, and can be delegated to a separate thread
+6. [Other] Add models (`Protocol` subclasses) for `Worker` and `Signal` appropriately named `IWorker` and `ISignal`
+
 ### 2025-02-04
 1. [Fix] Fix issue not allowing to choose folders on Windows 11
 2. [UI] Only allow to choose directories/folders in the file dialog
@@ -110,6 +118,8 @@ As is visible above, all files that were subject to renaming (eveything other th
 2. By default apply the padding automatically based on the number of files in the choosen directory
 
 ## Features to add
+- Show a dialog with progress of the renaming
+- Show logs in the application window (e.g., which file got renamed, which already had the correct name etc.)
 - Be able to select specific files to renames (instead of whole directories) - could be with a switch (radio button) to let user decide whether they want whole directory or just some files
 - Add a switch (checkbox maybe or iPhone-like switch) to have the number padding only automatic (disable user input) or forced by user (still the default value will be automatic)
 - Add a loader (based on the number of files already renamed vs remaining)
@@ -117,7 +127,7 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Add a separate toggle to also rename directories (eg. smth like `isDir` check)
 
 ## Known bugs
-- None
+- After renaming, changing the extension selection does not enable the "Rename" button (it should, since both modifying the length of padding and "New name" do it)
 
 ## Fixes to do
 - Reset the "Rename files" button if the input name or extensions selection changes without having to re-choose a directory again
@@ -128,3 +138,4 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Store logs in a file
 
 ## Other chores to do
+- Make sure all variables follow the same naming convention (e.g., all buttons are suffixed with `_btn`)
