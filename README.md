@@ -14,13 +14,13 @@ Use it at your own responsibility and exercise caution.
 ```
 git clone https://github.com/Artur-T-Malas/batch-file-renamer.git
 ```
-4. Install the necessary dependencies (PyQt6) by either running the following command
+4. Install the necessary dependencies (PySide6) by either running the following command
 ```
 poetry install
 ```
 or
 ```
-pip install PyQt6
+pip install PySide6
 ```
 5. Open a terminal and navigate to the application's root directory and run the following commands if you're on Windows
 ```
