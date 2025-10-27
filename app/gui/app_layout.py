@@ -1,7 +1,7 @@
+import logging
 import os
 
 from PySide6.QtCore import QThreadPool
-
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,
@@ -23,6 +23,10 @@ from core.models import IRenamer
 from core.worker import Worker
 
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
+
+
 class AppLayout(QWidget):
     def __init__(
             self,
@@ -32,7 +36,7 @@ class AppLayout(QWidget):
 
         self.threadpool = QThreadPool()
         thread_count = self.threadpool.maxThreadCount()
-        print(f"Multithreading with maximum {thread_count} threads.")
+        logger.info(f"Multithreading with maximum {thread_count} threads.")
 
         self.renamer = renamer
 
@@ -275,7 +279,7 @@ class AppLayout(QWidget):
         self.threadpool.start(worker)
 
     def handle_output(self, s: str) -> None:
-        print(s)
+        logger.info(s)
 
     def handle_complete(self) -> None:
         """Handle completion of a renaming task.
@@ -306,9 +310,9 @@ class AppLayout(QWidget):
         )
 
     def handle_errors(self, exc: tuple[type, str, str]) -> None:
-        print(
+        logger.info(
             f"Error while renaming files: {exc[0].__name__}. "
             f"{exc[1]}."
         )
         # Show traceback
-        # print(exc[2])
+        # logger.info(exc[2])

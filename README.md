@@ -70,6 +70,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-10-27
+1. [Other] Replace all `print` usages with `logger.info`
+
 ### 2025-10-26
 1. [Threading] Move the file renaming process to a background thread using `QThreadPool` and `QRunnable` (`Worker` class)
 2. [UI] Disable UI controls (buttons, checkboxes) during renaming to prevent user interaction while the operation is in progress
@@ -130,11 +133,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 - After renaming, changing the extension selection does not enable the "Rename" button (it should, since both modifying the length of padding and "New name" do it)
 
 ## Fixes to do
-- Reset the "Rename files" button if the input name or extensions selection changes without having to re-choose a directory again
 - Instead of showing the message on the "Rename files" button, display a message box showing either the success/failure of renaming operation eg. "Succesfully renamed 2024 of 2025 files"
 - Ignore extensions like .DS_Store etc.
 - Add typing where possible
-- Use logger instead of print functions
 - Store logs in a file
 
 ## Other chores to do
