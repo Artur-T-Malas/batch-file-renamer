@@ -72,6 +72,7 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ### 2025-10-27
 1. [Other] Replace all `print` usages with `logger.info`
+2. [Other] Make sure all variables follow the same naming convention (e.g., all buttons are suffixed with `_btn`)
 
 ### 2025-10-26
 1. [Threading] Move the file renaming process to a background thread using `QThreadPool` and `QRunnable` (`Worker` class)
@@ -139,4 +140,3 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Store logs in a file
 
 ## Other chores to do
-- Make sure all variables follow the same naming convention (e.g., all buttons are suffixed with `_btn`)

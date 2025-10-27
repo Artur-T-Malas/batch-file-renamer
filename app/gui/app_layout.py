@@ -48,9 +48,9 @@ class AppLayout(QWidget):
 
         # Create and configure PyQt elements
         self.directory_label = QLabel("Directory with files to rename: ", self)
-        self.select_files_to_rename = QPushButton("Select directory with files to rename", self)
-        self.new_name_preview = QLabel("", self)
-        self.new_name_preview.setWordWrap(True)
+        self.select_files_to_rename_btn = QPushButton("Select directory with files to rename", self)
+        self.new_name_preview_label = QLabel("", self)
+        self.new_name_preview_label.setWordWrap(True)
         new_name_label = QLabel("New name for this file batch", self)
         self.number_padding_label = QLabel("Length of \"0\" padding", self)
         self.number_padding_spin_box = QSpinBox(self)
@@ -65,7 +65,7 @@ class AppLayout(QWidget):
         self.extensions_group_box.setEnabled(False)
 
         # Connect signals
-        self.select_files_to_rename.clicked.connect(self.launch_choose_dir_dialog)
+        self.select_files_to_rename_btn.clicked.connect(self.launch_choose_dir_dialog)
         self.new_name_input.textChanged.connect(self.show_preview)
         self.number_padding_spin_box.valueChanged.connect(self.change_number_padding)
         self.number_padding_spin_box.valueChanged.connect(self.show_preview)
@@ -78,7 +78,7 @@ class AppLayout(QWidget):
 
         directory_layout = QVBoxLayout()
         directory_layout.addWidget(self.directory_label)
-        directory_layout.addWidget(self.select_files_to_rename)
+        directory_layout.addWidget(self.select_files_to_rename_btn)
         self.directory_group_box.setLayout(directory_layout)
         self.main_layout.addWidget(self.directory_group_box)
 
@@ -87,7 +87,7 @@ class AppLayout(QWidget):
         self.main_layout.addWidget(self.extensions_group_box)
 
         renaming_layout = QVBoxLayout()
-        renaming_layout.addWidget(self.new_name_preview)
+        renaming_layout.addWidget(self.new_name_preview_label)
 
         grid_rename_layout = QGridLayout()
         grid_rename_layout.addWidget(self.number_padding_label, 0, 0)
@@ -194,19 +194,19 @@ class AppLayout(QWidget):
             str_to_display: str = "Enter new name to see the preview"
             self.rename_files_btn.setEnabled(False)
             self.rename_files_btn.setText("Can't rename files")
-            self.new_name_preview.setStyleSheet(None)
+            self.new_name_preview_label.setStyleSheet(None)
 
         elif self.renamer.validate_new_name(input):
             str_to_display = "Files will be renamed to: {}_{}, {}_{} and so on".format(input, "1".zfill(self.number_padding), input , "2".zfill(self.number_padding))
             self.rename_files_btn.setEnabled(True)
             self.rename_files_btn.setText("Rename files")
-            self.new_name_preview.setStyleSheet(None)
+            self.new_name_preview_label.setStyleSheet(None)
         else:
             str_to_display = "Invalid new name. Only lowercase and uppercase letters, digits, \"-\", \"_\" and spaces are allowed!"
             self.rename_files_btn.setEnabled(False)
             self.rename_files_btn.setText("Can't rename files")
-            self.new_name_preview.setStyleSheet("color: red;")
-        self.new_name_preview.setText(str_to_display)
+            self.new_name_preview_label.setStyleSheet("color: red;")
+        self.new_name_preview_label.setText(str_to_display)
 
     def create_extension_choosing_panel(self, extensions: set[str], max_cols: int = 5) -> None:
         # Make all columns the same width
@@ -243,7 +243,7 @@ class AppLayout(QWidget):
     def rename_files(self) -> None:
         # Disable the buttons and checkboxes
         self.rename_files_btn.setEnabled(False)
-        self.select_files_to_rename.setEnabled(False)
+        self.select_files_to_rename_btn.setEnabled(False)
         self.extensions_group_box.setEnabled(False)
 
         new_batch_name: str = self.new_name_input.text()
@@ -259,7 +259,7 @@ class AppLayout(QWidget):
                      "folder it may cause some programs or even operating system to stop working!")
         ):
             self.rename_files_btn.setEnabled(True)
-            self.select_files_to_rename.setEnabled(True)
+            self.select_files_to_rename_btn.setEnabled(True)
             self.extensions_group_box.setEnabled(True)
             return
 
@@ -292,7 +292,7 @@ class AppLayout(QWidget):
         self.rename_files_btn.setText(
             'Files renamed succesfully. Choose next directory.'
         )
-        self.select_files_to_rename.setEnabled(True)
+        self.select_files_to_rename_btn.setEnabled(True)
         self.extensions_group_box.setEnabled(True)
 
     def show_progress(self, n: int) -> None:
