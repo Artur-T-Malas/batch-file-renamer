@@ -70,6 +70,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-10-28
+1. [Other] Make sure code adheres to PEP 8 (especially line length)
+
 ### 2025-10-27
 1. [Other] Replace all `print` usages with `logger.info`
 2. [Other] Make sure all variables follow the same naming convention (e.g., all buttons are suffixed with `_btn`)

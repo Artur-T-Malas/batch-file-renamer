@@ -48,7 +48,10 @@ class AppLayout(QWidget):
 
         # Create and configure PyQt elements
         self.directory_label = QLabel("Directory with files to rename: ", self)
-        self.select_files_to_rename_btn = QPushButton("Select directory with files to rename", self)
+        self.select_files_to_rename_btn = QPushButton(
+            "Select directory with files to rename",
+            self
+        )
         self.new_name_preview_label = QLabel("", self)
         self.new_name_preview_label.setWordWrap(True)
         new_name_label = QLabel("New name for this file batch", self)
@@ -61,20 +64,33 @@ class AppLayout(QWidget):
         self.directory_group_box = QGroupBox("Directory", self)
         self.renaming_group_box = QGroupBox("Renaming", self)
         self.renaming_group_box.setEnabled(False)
-        self.extensions_group_box = QGroupBox("Only files with chosen extensions will be renamed", self)
+        self.extensions_group_box = QGroupBox(
+            "Only files with chosen extensions will be renamed",
+            self
+        )
         self.extensions_group_box.setEnabled(False)
 
         # Connect signals
-        self.select_files_to_rename_btn.clicked.connect(self.launch_choose_dir_dialog)
-        self.new_name_input.textChanged.connect(self.show_preview)
-        self.number_padding_spin_box.valueChanged.connect(self.change_number_padding)
+        self.select_files_to_rename_btn.clicked.connect(
+            self.launch_choose_dir_dialog
+        )
+        self.new_name_input.textChanged.connect(
+            self.show_preview
+        )
+        self.number_padding_spin_box.valueChanged.connect(
+            self.change_number_padding
+        )
         self.number_padding_spin_box.valueChanged.connect(self.show_preview)
         self.rename_files_btn.clicked.connect(self.rename_files)
 
         # Add PyQt elements to layout
         self.main_layout = QVBoxLayout(self)
-        # This allows for the layout to resize on it's own, without the QMainWindow
-        self.main_layout.setSizeConstraint(QVBoxLayout.SizeConstraint.SetFixedSize)
+
+        # Below allows the layout to resize on it's own,
+        # without the QMainWindow
+        self.main_layout.setSizeConstraint(
+            QVBoxLayout.SizeConstraint.SetFixedSize
+        )
 
         directory_layout = QVBoxLayout()
         directory_layout.addWidget(self.directory_label)
@@ -114,7 +130,8 @@ class AppLayout(QWidget):
         dialog.setWindowTitle(title)
         dialog.setText(message)
         dialog.setStandardButtons(
-            QMessageBox.StandardButton.Apply | QMessageBox.StandardButton.Cancel
+            QMessageBox.StandardButton.Apply
+            | QMessageBox.StandardButton.Cancel
         )
         dialog.setIcon(QMessageBox.Icon.Question)
         button_clicked = dialog.exec()
@@ -136,8 +153,13 @@ class AppLayout(QWidget):
         self.number_padding = self.number_padding_spin_box.value()
 
     def launch_choose_dir_dialog(self):
-        self.choose_directory_dialog = QFileDialog(self, "Choose the directory")
-        self.choose_directory_dialog.setFileMode(QFileDialog.FileMode.Directory)
+        self.choose_directory_dialog = QFileDialog(
+            self,
+            "Choose the directory"
+        )
+        self.choose_directory_dialog.setFileMode(
+            QFileDialog.FileMode.Directory
+        )
         self.choose_directory_dialog.accepted.connect(self.choose_files)
         self.choose_directory_dialog.exec()
 
@@ -145,16 +167,25 @@ class AppLayout(QWidget):
         selected_files = self.choose_directory_dialog.selectedFiles()
         if len(selected_files) != 1:
             self.disable_and_clear_extension_and_renaming_panels()
-            self.show_error_message_messagebox("Wrong selection", "Only 1 directory / folder must be selected")
+            self.show_error_message_messagebox(
+                "Wrong selection",
+                "Only 1 directory / folder must be selected"
+            )
             return
         selected_file: str = selected_files[0]
         if not os.path.isdir(selected_file):
             self.disable_and_clear_extension_and_renaming_panels()
-            self.show_error_message_messagebox("Wrong selection", "Selected file instead of a directory / folder\nPlease select a single directory / folder")
+            self.show_error_message_messagebox(
+                "Wrong selection",
+                "Selected file instead of a directory / folder\n"
+                "Please select a single directory / folder"
+            )
             return
         self.directory = selected_file
 
-        # If the padding was not manually chosen, create it automatically based on number of digits in the count of files to rename
+        # If the padding was not manually chosen,
+        # create it automatically based on the number
+        # of digits in the count of files to rename
         if not self.number_padding_chosen:
             self.number_padding = len(str(len(os.listdir(self.directory))))
             self.number_padding_spin_box.setValue(self.number_padding)
@@ -170,10 +201,14 @@ class AppLayout(QWidget):
             self.disable_and_clear_extension_and_renaming_panels()
             return
 
-        self.directory_label.setText("Directory with files to rename: {}".format(self.directory))
+        self.directory_label.setText(
+            f"Directory with files to rename: {self.directory}"
+        )
         self.extensions_group_box.setEnabled(True)
         self.clear_extension_choosing_panel()
-        self.create_extension_choosing_panel(self.renamer.get_all_file_extensions(self.directory))
+        self.create_extension_choosing_panel(
+            self.renamer.get_all_file_extensions(self.directory)
+        )
         self.rename_files_btn.setText('Rename files')
         if self.new_name_input.text() != "":
             self.rename_files_btn.setEnabled(True)
@@ -197,18 +232,33 @@ class AppLayout(QWidget):
             self.new_name_preview_label.setStyleSheet(None)
 
         elif self.renamer.validate_new_name(input):
-            str_to_display = "Files will be renamed to: {}_{}, {}_{} and so on".format(input, "1".zfill(self.number_padding), input , "2".zfill(self.number_padding))
+            str_to_display = (
+                "Files will be renamed to: {}_{}, {}_{} and so on"
+                .format(
+                    input,
+                    "1".zfill(self.number_padding),
+                    input,
+                    "2".zfill(self.number_padding)
+                )
+            )
             self.rename_files_btn.setEnabled(True)
             self.rename_files_btn.setText("Rename files")
             self.new_name_preview_label.setStyleSheet(None)
         else:
-            str_to_display = "Invalid new name. Only lowercase and uppercase letters, digits, \"-\", \"_\" and spaces are allowed!"
+            str_to_display = (
+                "Invalid new name. Only lowercase and uppercase letters, "
+                "digits, \"-\", \"_\" and spaces are allowed!"
+            )
             self.rename_files_btn.setEnabled(False)
             self.rename_files_btn.setText("Can't rename files")
             self.new_name_preview_label.setStyleSheet("color: red;")
         self.new_name_preview_label.setText(str_to_display)
 
-    def create_extension_choosing_panel(self, extensions: set[str], max_cols: int = 5) -> None:
+    def create_extension_choosing_panel(
+            self,
+            extensions: set[str],
+            max_cols: int = 5
+    ) -> None:
         # Make all columns the same width
         for i in range(max_cols):
             self.checkboxes_layout.setColumnMinimumWidth(i, 50)
@@ -218,14 +268,22 @@ class AppLayout(QWidget):
         col: int = 0
         row: int = 0
         for extension in extensions_list:
-            extension_checkbox = ExtensionCheckbox(extension, self, self.extensions, self.renaming_group_box)
+            extension_checkbox = ExtensionCheckbox(
+                extension, self,
+                self.extensions,
+                self.renaming_group_box
+            )
             if col == max_cols:
                 col = 0
                 row += 1
-            self.checkboxes_layout.addWidget(extension_checkbox.checkbox, row, col)
+            self.checkboxes_layout.addWidget(
+                extension_checkbox.checkbox,
+                row,
+                col
+            )
             col += 1
             self.checkboxes.append(extension_checkbox)
-    
+
     def clear_extension_choosing_panel(self) -> None:
         for checkbox in self.checkboxes:
             self.checkboxes_layout.removeWidget(checkbox.checkbox)
@@ -254,9 +312,15 @@ class AppLayout(QWidget):
         )
         if not self.get_confirmation(
             title="Rename files?",
-            message=(f"Are your sure you want to rename {len(files_to_rename)} files with following extensions: ("
-                     f"{', '.join(self.extensions)}) in\n{self.directory}?\n\nWARNING: If done in a wrong directory / "
-                     "folder it may cause some programs or even operating system to stop working!")
+            message=(
+                f"Are your sure you want to rename {len(files_to_rename)} "
+                "files with following extensions: ("
+                f"{', '.join(self.extensions)}) in"
+                f"\n{self.directory}?\n\n"
+                "WARNING: If done in a wrong directory / "
+                "folder it may cause some programs "
+                "or even operating system to stop working!"
+            )
         ):
             self.rename_files_btn.setEnabled(True)
             self.select_files_to_rename_btn.setEnabled(True)

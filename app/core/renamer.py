@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 
-DEFAULT_ALLOWED_PATTERN = r"^[a-zA-Z0-9-_ ]+$" # Letter, digits, -, _ and spaces
+# Letter, digits, -, _ and spaces
+DEFAULT_ALLOWED_PATTERN = r"^[a-zA-Z0-9-_ ]+$"
 
 
 class Renamer:
@@ -37,9 +38,11 @@ class Renamer:
         self,
         path: str
     ) -> list[str]:
-
         file_list: list[str] = os.listdir(path)
-        filtered_list: list[str] = [file for file in file_list if not os.path.isdir(os.path.join(path, file))]
+        filtered_list: list[str] = [
+            file for file in file_list
+            if not os.path.isdir(os.path.join(path, file))
+        ]
         return filtered_list
 
     def filter_extensions(
@@ -47,14 +50,12 @@ class Renamer:
         file_list: list[str],
         extensions: list[str]
     ) -> list[str]:
-
         corrected_file_list: list[str] = []
         for file in file_list:
             old_name, extension = os.path.splitext(file)
             if extension in extensions:
                 corrected_file_list.append(file)
         return corrected_file_list
-    
 
     def get_file_number_from_name(
             self,
@@ -63,7 +64,8 @@ class Renamer:
         """
         Returns the number of the file taken from its name.
         Requires the file name to be match this regex pattern:
-        `^\S*_\d+.?\S*$` (basically <whatever>_### or <whatever>_###.<extension>)
+        `^\S*_\d+.?\S*$` (basically <whatever>_###
+        or <whatever>_###.<extension>).
         For more information about patterns and regex visit:
         https://docs.python.org/3/howto/regex.html
         and to try it out visit:
@@ -75,14 +77,14 @@ class Renamer:
         file_number: int = int(extracted_file_number)
         return file_number
 
-
     def get_files_matching_pattern(
             self,
             file_list: list[str],
             pattern: str
     ) -> list[str]:
         """
-        Finds and returns names of files which match the specified regex pattern.
+        Finds and returns names of files which
+        match the specified regex pattern.
         For more information about patterns and regex visit:
         https://docs.python.org/3/howto/regex.html
         and to try it out visit:
@@ -94,7 +96,6 @@ class Renamer:
             if re.match(compiled_pattern, file):
                 files_matching.append(file)
         return files_matching
-    
 
     def get_files_matching_range(
             self,
@@ -108,7 +109,12 @@ class Renamer:
         """
         if file_number_getting_function is None:
             file_number_getting_function = self.get_file_number_from_name
-        files_matching_range: list[str] = list(filter(lambda name: file_number_getting_function(name) <= max_number, file_list))
+        files_matching_range: list[str] = list(
+            filter(
+                lambda name: file_number_getting_function(name) <= max_number,
+                file_list
+            )
+        )
         return files_matching_range
 
     def validate_new_name(
@@ -117,36 +123,43 @@ class Renamer:
             pattern: Pattern | None = None
     ) -> bool:
         """
-        Validates the `new_name` by trying to match it agains REGEX pattern provided or
-        default one stored in `self.pattern` variable, if not explicitly provided.
+        Validates the `new_name` by trying to match it
+        against REGEX pattern provided or default one,
+        stored in `self.pattern` variable, if not explicitly provided.
         """
         pattern = pattern if pattern else self.pattern
         return bool(re.match(pattern, new_name))
-
 
     def get_renaming_map(
             self,
             files_to_rename: list[str],
             new_batch_name: str,
             number_padding: int = 3
-        ) -> dict[str, str]:
+    ) -> dict[str, str]:
         """
-        Prepares and returns a map of old file names to new file names (including extensions)
-        to be used for renaming.
-        Filters the input file list to check if some files have filenames and numbers already
-        matching the pattern and removes files and numbers that it finds from the renaming pool
+        Prepares and returns a map of old file names to new file names
+        (including extensions) to be used for renaming.
+        Filters the input file list to check if some files
+        have filenames and numbers already matching the pattern
+        and removes files and numbers that it finds from the renaming pool.
         """
         files_to_rename.sort()
         max_number: int = len(files_to_rename)
         numbers_pool: list[int] = sorted(list(range(1, max_number + 1)))
 
-        logger.info(f"{files_to_rename = }")
+        logger.info(f"{files_to_rename=}")
 
         # Check if any files already have a name that matches the new one
-        pattern: str = f"^{new_batch_name}_\d{{{number_padding}}}\.\S*$|^{new_batch_name}_\d{{{number_padding}}}$"
-        files_with_names_matching_pattern: list[str] = self.get_files_matching_pattern(files_to_rename, pattern)
+        pattern: str = (
+            f"^{new_batch_name}_\d{{{number_padding}}}\.\S*$|"
+            f"^{new_batch_name}_\d{{{number_padding}}}$"
+        )
+        files_with_names_matching_pattern: list[str] = (
+            self.get_files_matching_pattern(files_to_rename, pattern)
+        )
 
-        # If those files were found, check if their numbers are in the correct range
+        # If those files were found, check if their numbers
+        # are in the correct range
         files_with_correct_numbers: list[str] = self.get_files_matching_range(
             files_with_names_matching_pattern,
             max_number,
@@ -157,13 +170,19 @@ class Renamer:
         for file in files_with_correct_numbers:
             files_to_rename.remove(file)
             numbers_pool.remove(self.get_file_number_from_name(file))
-        logger.info(f"Following files have already matching names and numbers: {files_with_correct_numbers}")
+        logger.info(
+            "Following files have already matching names "
+            f"and numbers: {files_with_correct_numbers}"
+        )
 
         files_map: dict[str, str] = {}
         for old_name_with_extension in files_to_rename:
             extension: str = os.path.splitext(old_name_with_extension)[1]
             file_number: int = numbers_pool.pop(0)
-            new_name_with_extension: str = f'{new_batch_name}_{str(file_number).zfill(number_padding)}' + (extension if extension else '')
+            new_name_with_extension: str = (
+                f'{new_batch_name}_{str(file_number).zfill(number_padding)}'
+                + (extension if extension else '')
+            )
             files_map[old_name_with_extension] = new_name_with_extension
 
         return files_map
@@ -183,10 +202,16 @@ class Renamer:
         for old_name, new_name in files_map.items():
 
             if old_name not in os.listdir(directory):
-                raise ValueError(f"File {old_name} was not present in the directory. Files map is likely incorrect")
+                raise ValueError(
+                    f"File {old_name} was not present in the directory. "
+                    "Files map is likely incorrect."
+                )
 
             if new_name in os.listdir(directory):
-                logger.error(f"File {old_name} could not be renamed to {new_name}, as {new_name} already exists in the directory")
+                logger.error(
+                    f"File {old_name} could not be renamed to {new_name}, "
+                    f"as {new_name} already exists in the directory"
+                )
                 continue
 
             old = os.path.join(directory, old_name)
