@@ -1,6 +1,7 @@
 import pytest
 from app.core.renamer import Renamer
 
+
 @pytest.fixture
 def pattern() -> str:
     """

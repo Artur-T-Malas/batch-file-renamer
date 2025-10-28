@@ -18,9 +18,9 @@ from PySide6.QtGui import (
     QResizeEvent
 )
 
-from .extension_checkbox import ExtensionCheckbox
-from core.models import IRenamer
-from core.worker import Worker
+from app.gui.extension_checkbox import ExtensionCheckbox
+from app.core.models import IRenamer
+from app.core.worker import Worker
 
 
 logger = logging.getLogger(__name__)

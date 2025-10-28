@@ -1,9 +1,9 @@
 import sys
 from PySide6.QtWidgets import QApplication
 
-from core.renamer import Renamer
-from gui.app_layout import AppLayout
-from gui.app_main_window import AppMainWindow
+from app.core.renamer import Renamer
+from app.gui.app_layout import AppLayout
+from app.gui.app_main_window import AppMainWindow
 
 
 def main() -> None:
