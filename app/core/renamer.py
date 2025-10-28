@@ -11,7 +11,7 @@ from collections.abc import Callable
 from re import Pattern
 import time
 
-from core.models import ISignal
+from .models import ISignal
 
 
 logger = logging.getLogger(__name__)
