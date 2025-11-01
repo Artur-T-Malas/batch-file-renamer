@@ -70,6 +70,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-11-01
+1. [UI] Set the maximum value of the "Leading 0s count" to 10
+
 ### 2025-10-28
 1. [Other] Make sure code adheres to PEP 8 (especially line length)
 

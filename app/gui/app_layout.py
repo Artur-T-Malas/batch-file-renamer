@@ -58,6 +58,7 @@ class AppLayout(QWidget):
         self.number_padding_label = QLabel("Length of \"0\" padding", self)
         self.number_padding_spin_box = QSpinBox(self)
         self.number_padding_spin_box.setMinimum(1)
+        self.number_padding_spin_box.setMaximum(10)
         self.new_name_input = QLineEdit(self)
         self.rename_files_btn = QPushButton("Rename files", self)
         self.rename_files_btn.setEnabled(False)
@@ -194,7 +195,7 @@ class AppLayout(QWidget):
         if self.directory == os.getcwd():
             dlg = QMessageBox(self)
             dlg.setWindowTitle("Denied")
-            dlg.setText("You can't rename the files in this directory.")
+            dlg.setText("You can't rename files in this directory.")
             dlg.setIcon(QMessageBox.Icon.Critical)
             self.rename_files_btn.setEnabled(False)
             dlg.exec()
