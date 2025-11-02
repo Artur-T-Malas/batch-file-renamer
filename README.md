@@ -70,6 +70,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-11-02
+1. [UI] Fix bug causing the change of selected directory to not properly remove old checkboxes and creating new ones over existing ones.
+
 ### 2025-11-01
 1. [UI] Set the maximum value of the "Leading 0s count" to 10
 
@@ -138,7 +141,6 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Known bugs
 - After renaming, changing the extension selection does not enable the "Rename" button (it should, since both modifying the length of padding and "New name" do it)
-- Changing the directory doesn't clean old extensions checkboxes (should be deleted before recreating)
 
 ## Fixes to do
 - Make sure changing directory resets everything

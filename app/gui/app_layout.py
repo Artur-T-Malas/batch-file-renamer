@@ -288,6 +288,7 @@ class AppLayout(QWidget):
     def clear_extension_choosing_panel(self) -> None:
         for checkbox in self.checkboxes:
             self.checkboxes_layout.removeWidget(checkbox.checkbox)
+            checkbox.checkbox.close()
         self.checkboxes.clear()
         self.extensions.clear()
 
