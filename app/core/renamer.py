@@ -61,7 +61,7 @@ class Renamer:
             self,
             filename: str
     ) -> int:
-        """
+        r"""
         Returns the number of the file taken from its name.
         Requires the file name to be match this regex pattern:
         `^\S*_\d+.?\S*$` (basically <whatever>_###
@@ -151,8 +151,8 @@ class Renamer:
 
         # Check if any files already have a name that matches the new one
         pattern: str = (
-            f"^{new_batch_name}_\d{{{number_padding}}}\.\S*$|"
-            f"^{new_batch_name}_\d{{{number_padding}}}$"
+            rf"^{new_batch_name}_\d{{{number_padding}}}\.\S*$|"
+            rf"^{new_batch_name}_\d{{{number_padding}}}$"
         )
         files_with_names_matching_pattern: list[str] = (
             self.get_files_matching_pattern(files_to_rename, pattern)
@@ -258,7 +258,9 @@ class Renamer:
         total: int = len(renaming_map)
 
         # DEBUG - make the renaming process always run at least 5 s
-        sleep_time: float = 5 / total
+        # if there are more than 20 files, otherwise - 2 s
+        total_sleep_time: int = 5 if total > 20 else 2
+        sleep_time: float = total_sleep_time / total
         logger.info(f'{sleep_time=}')
 
         for index, key in enumerate(renaming_map):

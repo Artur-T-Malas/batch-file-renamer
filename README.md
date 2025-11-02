@@ -138,8 +138,13 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Known bugs
 - After renaming, changing the extension selection does not enable the "Rename" button (it should, since both modifying the length of padding and "New name" do it)
+- Changing the directory doesn't clean old extensions checkboxes (should be deleted before recreating)
 
 ## Fixes to do
+- Make sure changing directory resets everything
+- Disallow leading and trailing whitespace in the new name
+- Allow (at least) Polish, Spanish and German specific letters (e.g., ą, ł)
+- Limit the max length of new file name (e.g. to 50 characters)
 - Instead of showing the message on the "Rename files" button, display a message box showing either the success/failure of renaming operation eg. "Succesfully renamed 2024 of 2025 files"
 - Ignore extensions like .DS_Store etc.
 - Add typing where possible
