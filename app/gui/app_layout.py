@@ -1,7 +1,10 @@
 import logging
 import os
 
-from PySide6.QtCore import QThreadPool
+from PySide6.QtCore import (
+    QThreadPool,
+    Slot
+)
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,
@@ -153,6 +156,12 @@ class AppLayout(QWidget):
         self.number_padding_chosen = True
         self.number_padding = self.number_padding_spin_box.value()
 
+    @Slot()
+    def enable_rename_files_btn(self):
+        """Enable the "Rename" button."""
+        self.rename_files_btn.setEnabled(True)
+        self.rename_files_btn.setText('Rename files')
+
     def launch_choose_dir_dialog(self):
         self.choose_directory_dialog = QFileDialog(
             self,
@@ -272,6 +281,7 @@ class AppLayout(QWidget):
             extension_checkbox = ExtensionCheckbox(
                 extension, self,
                 self.extensions,
+                self.enable_rename_files_btn,
                 self.renaming_group_box
             )
             if col == max_cols:

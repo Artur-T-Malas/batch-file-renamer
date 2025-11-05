@@ -1,3 +1,5 @@
+from typing import Callable
+
 from PySide6.QtWidgets import QWidget, QCheckBox, QGroupBox
 
 
@@ -7,6 +9,7 @@ class ExtensionCheckbox:
             extension: str,
             parent: QWidget,
             extensions_list: list[str],
+            rename_btn_enabler: Callable[[], None],
             renaming_group_box: QGroupBox | None = None
     ) -> None:
         """
@@ -23,6 +26,7 @@ class ExtensionCheckbox:
 
         self.extensions_list = extensions_list
         self.checkbox.stateChanged.connect(self.toggle_extension)
+        self.checkbox.stateChanged.connect(rename_btn_enabler)
         self.renaming_group_box: QGroupBox | None = renaming_group_box
 
     def toggle_extension(self) -> None:

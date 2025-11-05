@@ -70,6 +70,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 
 ## Changelog
 
+### 2025-11-05
+1. [UI] Fix bug causing the "Rename files" button to not be re-enabled by changing the extension selection after renaming (without changing directory).
+
 ### 2025-11-02
 1. [UI] Fix bug causing the change of selected directory to not properly remove old checkboxes and creating new ones over existing ones.
 
@@ -140,9 +143,9 @@ As is visible above, all files that were subject to renaming (eveything other th
 - Add a separate toggle to also rename directories (eg. smth like `isDir` check)
 
 ## Known bugs
-- After renaming, changing the extension selection does not enable the "Rename" button (it should, since both modifying the length of padding and "New name" do it)
 
 ## Fixes to do
+- Make changing of number padding enable the "Rename" button
 - Make sure changing directory resets everything
 - Disallow leading and trailing whitespace in the new name
 - Allow (at least) Polish, Spanish and German specific letters (e.g., ą, ł)
